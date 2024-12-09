@@ -1,0 +1,18 @@
+{
+  "acuro" : "Acuro",
+  "predict" : "Predict",
+  "with_confidence" : "with confidence",
+  "get_started" : "Get started",
+  "log_in" : "Log in",
+  "what_is_your_phone_number" : "What’s your phone number?",
+  "enter_your_phone_number_desc" : "Enter your phone number. We will send you a confirmation code there",
+  "mobile_number" : "Mobile number",
+  "already_have_an_account" : "Already have an account? Log in",
+  "get_otp" : "Get OTP",
+  "six_digit_code" : "6-digit code",
+  "please_enter_the_code_we_sent_to" : "Please enter the code we’ve sent to ",
+  "resend_code_in" : "Resend code in ",
+  "resend_code" : "Resend code",
+  "search_country" : "Search country",
+  "code_you_have_entered_not_matched" : "Code you have entered doesn’t match"
+}
