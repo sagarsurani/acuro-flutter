@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+textWith10W500(
+    Color color,
+    ) {
+  return TextStyle(color: color, fontSize: 10.sp, fontWeight: FontWeight.w500);
+}
+
 textWith14W400(
     Color color,
     ) {
@@ -11,6 +17,13 @@ textWith14W500(
   Color color,
 ) {
   return TextStyle(color: color, fontSize: 14.sp, fontWeight: FontWeight.w500);
+}
+
+
+textWith16W400(
+    Color color,
+    ) {
+  return TextStyle(color: color, fontSize: 16.sp, fontWeight: FontWeight.w400);
 }
 
 
@@ -31,6 +44,12 @@ textWith20W400(
     Color color,
     ) {
   return TextStyle(color: color, fontSize: 20.sp, fontWeight: FontWeight.w400);
+}
+
+textWith20W500(
+    Color color,
+    ) {
+  return TextStyle(color: color, fontSize: 20.sp, fontWeight: FontWeight.w500);
 }
 
 textWith24W500(

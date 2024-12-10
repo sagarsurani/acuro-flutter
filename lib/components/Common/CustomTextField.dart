@@ -94,7 +94,7 @@ class CustomTextField extends StatelessWidget {
         minLines: minLines ?? 1,
         autocorrect: false,
         enableSuggestions: enableSuggestions ?? true,
-        obscuringCharacter: obscuringCharacter ?? "*",
+        obscuringCharacter: obscuringCharacter ?? "•",
         readOnly: isReadOnly ?? false,
         textInputAction: textInputAction ?? TextInputAction.next,
         controller: controller,
@@ -102,16 +102,13 @@ class CustomTextField extends StatelessWidget {
         onChanged: onChanged,
         onSubmitted: onFieldSubmitted,
         keyboardType: keyboardType,
-        onTapOutside: (event) {
-          // AppUtils.keyboardClose(GlobalConstant.focusScopeNode);
-        },
         inputFormatters: inputFormatters ?? [],
         style: fontStyle ?? textWith20W400(ColorConstants.black1),
         decoration: InputDecoration(
           isDense: true,
           hintText: hint,
           hintStyle: hintStyle ?? textWith20W400(ColorConstants.grey2),
-          contentPadding: contentPadding ?? EdgeInsets.all(18.r),
+          contentPadding: contentPadding ?? EdgeInsets.all(16.r),
           border: InputBorder.none,
           prefixIcon: prefixWidget,
           suffixIcon: (suffixIcon != null)

@@ -15,4 +15,7 @@ class ColorConstants {
   static const Color grey2 = Color(0xFF8B9199);
   static const Color countryBackground = Color(0xFFF4F5F7);
   static const Color textFieldColor = Color(0xFFE1E3E7);
+  static const Color otpInactiveColor = Color(0xFFEDEFF3);
+  static const Color roleComingText = Color(0xFFBFC3C8);
+  static const Color green = Color(0xFF36B37E);
 }

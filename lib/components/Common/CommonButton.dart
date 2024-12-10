@@ -1,4 +1,3 @@
-
 import 'package:acuro/core/theme/AppColors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,6 +8,7 @@ import 'CommonTextStyle.dart';
 class CommonButton extends StatefulWidget {
   final Function() onTap;
   final String buttonText;
+  final bool? isEnable;
   final String? suffixIcon;
   final double? iconSize;
   final Color? iconColor;
@@ -24,6 +24,7 @@ class CommonButton extends StatefulWidget {
   const CommonButton(
       {super.key,
       required this.onTap,
+      this.isEnable,
       required this.buttonText,
       this.borderRadius,
       this.loaderColor,
@@ -44,22 +45,25 @@ class CommonButton extends StatefulWidget {
 class _CommonButtonState extends State<CommonButton> {
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: (widget.isLoading ?? false) ? () {} : widget.onTap,
-      highlightColor: Colors.transparent,
-      hoverColor: Colors.transparent,
-      splashColor: Colors.transparent,
-      onDoubleTap: widget.onTap,
-      borderRadius: BorderRadius.circular(15.r),
-      child: Container(
-        height: 48.h,
-        padding: EdgeInsets.all(6.r),
-        margin: widget.margin,
-        decoration: BoxDecoration(
-          color: widget.backGroundColor ?? ColorConstants.blue,
-          borderRadius: BorderRadius.circular(widget.borderRadius ?? 15.r),
+    return Opacity(
+      opacity: widget.isEnable ?? true ? 1 : 0.5,
+      child: InkWell(
+        onTap: (widget.isLoading ?? false) ? () {} : widget.onTap,
+        highlightColor: Colors.transparent,
+        hoverColor: Colors.transparent,
+        splashColor: Colors.transparent,
+        onDoubleTap: widget.onTap,
+        borderRadius: BorderRadius.circular(15.r),
+        child: Container(
+          height: 48.h,
+          padding: EdgeInsets.all(6.r),
+          margin: widget.margin,
+          decoration: BoxDecoration(
+            color: widget.backGroundColor ?? ColorConstants.blue,
+            borderRadius: BorderRadius.circular(widget.borderRadius ?? 15.r),
+          ),
+          child: (widget.isLoading ?? false) ? loaderView() : buttonTextView(),
         ),
-        child: (widget.isLoading ?? false) ? loaderView() : buttonTextView(),
       ),
     );
   }

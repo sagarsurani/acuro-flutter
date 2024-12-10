@@ -11,6 +11,14 @@ class AppUtils {
     }
   }
 
+  static bool isPasswordValid(String value) {
+    if (value.isNotEmpty) {
+      return value.contains(RegExp(r'^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+{}|:"<>?~-]).{8,}$'));
+    } else {
+      return false;
+    }
+  }
+
   static closeTheKeyboard(BuildContext context) {
     FocusScopeNode currentFocus = FocusScope.of(context);
     if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {

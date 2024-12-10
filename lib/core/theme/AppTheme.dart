@@ -6,6 +6,6 @@ import 'AppColors.dart';
 class AppTheme {
   static final appTheme = ThemeData(
     fontFamily: AEONIK,
-    primaryColor: ColorConstants.white1
+    primaryColor: ColorConstants.white1,
   );
 }

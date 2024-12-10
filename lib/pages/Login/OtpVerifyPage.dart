@@ -1,66 +1,167 @@
+import 'dart:async';
+import 'package:acuro/components/Common/AnimatedSwitcher.dart';
 import 'package:acuro/components/Common/CommonButton.dart';
+import 'package:acuro/components/Common/CommonSplashBackView.dart';
 import 'package:acuro/components/Common/CommonTextStyle.dart';
-import 'package:acuro/core/constants/ImageConstants.dart';
+import 'package:acuro/components/Login/CommonAuthHeader.dart';
+import 'package:acuro/components/Login/OTPView.dart';
+import 'package:acuro/core/navigator/AppRouter.gr.dart';
 import 'package:acuro/core/theme/AppColors.dart';
+import 'package:acuro/core/utils/AppUtils.dart';
+import 'package:acuro/core/utils/TimeUtils.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 @RoutePage()
 class OtpVerifyPage extends StatefulWidget {
-  const OtpVerifyPage({super.key});
+  final String phoneNumber;
+  const OtpVerifyPage({super.key, required this.phoneNumber});
 
   @override
   State<OtpVerifyPage> createState() => _OtpVerifyPageState();
 }
 
 class _OtpVerifyPageState extends State<OtpVerifyPage> {
+  TextEditingController otpController = TextEditingController();
+  bool hasError = false;
+  String errorText = '';
+  bool canResend = false;
+  int timeLeft = 30;
+  Timer? _timer;
+
+  void startResendTimer() {
+    _timer?.cancel();
+    setState(() {
+      canResend = false;
+      timeLeft = 30;
+    });
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (timeLeft > 0) {
+        setState(() {
+          timeLeft--;
+        });
+      } else {
+        timer.cancel();
+        setState(() {
+          canResend = true;
+        });
+      }
+    });
+  }
+
+  void resendCode() {
+    if (canResend) {
+      startResendTimer();
+    }
+  }
+
+  void submitOtpFunc(AppLocalizations appText) {
+    if (otpController.text != "123456") {
+      setState(() {
+        hasError = true;
+        errorText = appText.code_you_have_entered_not_matched;
+      });
+    } else if (!hasError && otpController.text == "123456") {
+      context.router.push(const EmailVerificationRoute());
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     var appText = AppLocalizations.of(context)!;
-    return Scaffold(
-      body: Padding(
-        padding:
-            EdgeInsets.only(top: 60.h, bottom: 24.h, left: 20.w, right: 20.w),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SvgPicture.asset(ImageConstants.icArrowLeft),
-            SizedBox(height: 14.h),
-            Text(
-              appText.six_digit_code,
-              style: textWith24W500(ColorConstants.black1),
+    return GestureDetector(
+      onTap: () {
+        AppUtils.closeTheKeyboard(context);
+      },
+      child: Scaffold(
+        body: Padding(
+          padding:
+              EdgeInsets.only(top: 60.h, bottom: 24.h, left: 20.w, right: 20.w),
+          child: SmoothView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // back view
+                CommonBackView(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                SizedBox(height: 14.h),
+                // headerView
+                headerView(appText),
+                SizedBox(height: 32.h),
+                // otp View
+                OtpView(
+                  controller: otpController,
+                  hasError: hasError,
+                  onChanged: (p0) {
+                    hasError = false;
+                    setState(() {});
+                  },
+                ),
+                // otp error view
+                errorView(),
+                SizedBox(height: 16.h),
+                //resend text
+                resendText(appText),
+                const Spacer(),
+                // submit button
+                CommonButton(
+                    onTap: () {
+                      submitOtpFunc(appText);
+                    },
+                    isEnable: otpController.text.length == 6,
+                    buttonText: appText.continueText)
+              ],
             ),
-            SizedBox(height: 4.h),
-            Text(
-              appText.please_enter_the_code_we_sent_to,
-              style: textWith14W400(ColorConstants.grey1),
-            ),
-            SizedBox(height: 32.h),
-            OtpTextField(
-              fieldWidth: MediaQuery.of(context).size.width / 5.15,
-              filled: true,
-              fillColor: ColorConstants.grey2,
-              numberOfFields: 4,
-              cursorColor: Colors.transparent,
-              textStyle: textWith20W400(ColorConstants.black1),
-              borderRadius: BorderRadius.circular(10),
-              showFieldAsBox: true,
-            ),
-            SizedBox(height: 16.h),
-            Text(
-              appText.already_have_an_account,
-              style: textWith16W500(ColorConstants.blue),
-            ),
-            const Spacer(),
-            CommonButton(onTap: () {}, buttonText: appText.get_otp)
-          ],
+          ),
         ),
       ),
     );
+  }
+
+  Widget headerView(AppLocalizations appText) {
+    return CommonAuthHeader(
+      headerText: appText.six_digit_code,
+      bodyText:
+          "${appText.please_enter_the_code_we_sent_to}\n${widget.phoneNumber}",
+    );
+  }
+
+  Widget errorView() {
+    return hasError
+        ? Text(
+            errorText,
+            style: textWith16W400(ColorConstants.red),
+          )
+        : const SizedBox.shrink();
+  }
+
+  Widget resendText(AppLocalizations appText) {
+    return canResend
+        ? InkWell(
+            onTap: () {
+              resendCode();
+            },
+            child: Text(
+              appText.resend_code,
+              style: textWith16W500(ColorConstants.blue),
+            ),
+          )
+        : Text(
+            "${appText.resend_code_in}${TimeUtils.otpTime(timeLeft)}",
+            style: textWith16W400(ColorConstants.black1),
+          );
   }
 }

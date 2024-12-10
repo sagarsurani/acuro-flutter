@@ -1,6 +1,5 @@
 
 import 'package:acuro/components/Common/RouteComponent.dart';
-import 'package:acuro/pages/Login/PhoneRegistrationPage.dart';
 import 'package:auto_route/auto_route.dart';
 import 'AppRouter.gr.dart';
 
@@ -11,6 +10,10 @@ class AppRouter extends RootStackRouter {
     autoRouteComponent(page: SplashRoute.page,initial: true),
     autoRouteComponent(page: GetStartedRoute.page),
     autoRouteComponent(page: PhoneRegistrationRoute.page),
-    autoRouteComponent(page: OtpVerifyRoute.page)
+    autoRouteComponent(page: OtpVerifyRoute.page),
+    autoRouteComponent(page: EmailVerificationRoute.page),
+    autoRouteComponent(page: TakeUserDetailsRoute.page),
+    autoRouteComponent(page: SelectRoleRoute.page),
+    autoRouteComponent(page: SelectCommodityRoute.page,),
   ];
 }
