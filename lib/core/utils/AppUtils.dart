@@ -26,10 +26,22 @@ class AppUtils {
     }
   }
 
-  static List<TextInputFormatter> onlyDigitsFormatter() {
+
+  static List<TextInputFormatter> onlyDigitsFormatter(int? maxDigits) {
     return [
       FilteringTextInputFormatter.digitsOnly,
       FilteringTextInputFormatter.allow(RegExp(r'^[0-9]*$')),
+      if(maxDigits != 0)...[
+        LengthLimitingTextInputFormatter(maxDigits),
+      ]
     ];
   }
+
+  static List<TextInputFormatter> onlyTextFormatter() {
+    return [
+      FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z]*$')),
+    ];
+  }
+
+
 }

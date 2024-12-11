@@ -15,5 +15,10 @@ class AppRouter extends RootStackRouter {
     autoRouteComponent(page: TakeUserDetailsRoute.page),
     autoRouteComponent(page: SelectRoleRoute.page),
     autoRouteComponent(page: SelectCommodityRoute.page,),
+    autoRouteComponent(page: CommodityConfirmationRoute.page),
+    autoRouteComponent(page: LoginRoute.page),
+    autoRouteComponent(page: ForgotPasswordRoute.page),
+    autoRouteComponent(page: ForgotOtpRoute.page),
+    autoRouteComponent(page: ResetPasswordRoute.page),
   ];
 }

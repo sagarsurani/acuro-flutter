@@ -1,10 +1,6 @@
 import 'dart:async';
-import 'package:acuro/components/Common/AnimatedSwitcher.dart';
 import 'package:acuro/components/Common/CommonBackgroundView.dart';
-import 'package:acuro/components/Common/CommonButton.dart';
-import 'package:acuro/components/Common/CommonSplashBackView.dart';
 import 'package:acuro/components/Common/CommonTextStyle.dart';
-import 'package:acuro/components/Login/CommonAuthHeader.dart';
 import 'package:acuro/components/Login/OTPView.dart';
 import 'package:acuro/core/navigator/AppRouter.gr.dart';
 import 'package:acuro/core/theme/AppColors.dart';
@@ -12,19 +8,25 @@ import 'package:acuro/core/utils/AppUtils.dart';
 import 'package:acuro/core/utils/TimeUtils.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../components/Common/AnimatedSwitcher.dart';
+import '../../components/Common/CommonButton.dart';
+import '../../components/Common/CommonSplashBackView.dart';
+import '../../components/Login/CommonAuthHeader.dart';
 
 @RoutePage()
-class OtpVerifyPage extends StatefulWidget {
-  final String phoneNumber;
-  const OtpVerifyPage({super.key, required this.phoneNumber});
+class ForgotOtpPage extends StatefulWidget {
+  final bool isEmail;
+  final String detailsValue;
+  const ForgotOtpPage(
+      {super.key, required this.isEmail, required this.detailsValue});
 
   @override
-  State<OtpVerifyPage> createState() => _OtpVerifyPageState();
+  State<ForgotOtpPage> createState() => _ForgotOtpPageState();
 }
 
-class _OtpVerifyPageState extends State<OtpVerifyPage> {
+class _ForgotOtpPageState extends State<ForgotOtpPage> {
   TextEditingController otpController = TextEditingController();
   bool hasError = false;
   String errorText = '';
@@ -72,8 +74,13 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
         errorText = appText.code_you_have_entered_not_matched;
       });
     } else if (!hasError && otpController.text == "123456") {
-      context.router.push(const EmailVerificationRoute());
+      navigateToResetPasswordRoute();
     }
+  }
+
+  void navigateToResetPasswordRoute() {
+    context.router.pushAndPopUntil(const ResetPasswordRoute(),
+        predicate: (route) => false);
   }
 
   @override
@@ -145,7 +152,7 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
     return CommonAuthHeader(
       headerText: appText.six_digit_code,
       bodyText:
-          "${appText.please_enter_the_code_we_sent_to}\n${widget.phoneNumber}",
+          "${appText.please_enter_the_code_we_sent_to}\n${widget.detailsValue}",
     );
   }
 

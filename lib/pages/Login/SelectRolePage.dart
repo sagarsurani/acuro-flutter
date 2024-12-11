@@ -1,9 +1,11 @@
 
 import 'package:acuro/components/Common/AnimatedSwitcher.dart';
+import 'package:acuro/components/Common/CommonBackgroundView.dart';
 import 'package:acuro/components/Common/CommonTextStyle.dart';
 import 'package:acuro/components/Login/CommonAuthHeader.dart';
 import 'package:acuro/core/constants/Constants.dart';
 import 'package:acuro/core/constants/ImageConstants.dart';
+import 'package:acuro/core/navigator/AppRouter.gr.dart';
 import 'package:acuro/core/theme/AppColors.dart';
 import 'package:acuro/models/Model.dart';
 import 'package:auto_route/auto_route.dart';
@@ -56,29 +58,26 @@ class _SelectRolePageState extends State<SelectRolePage> {
     var appText = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: ColorConstants.white1,
-      body: Padding(
-        padding:
-            EdgeInsets.only(top: 90.h, bottom: 24.h, left: 20.w, right: 20.w),
-        child: SmootherView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // CommonBackView(
-              //   onTap: () {
-              //     Navigator.of(context);
-              //   },
-              // ),
-              SizedBox(height: 14.h),
-              // content view
-              CommonAuthHeader(
-                  headerText: appText.select_your_role,
-                  bodyText: appText.choose_how_you_primarily_interact),
-              SizedBox(height: 32.h),
+      body: CommonBackgroundView(
+        child: Padding(
+          padding:
+              EdgeInsets.only(top: 90.h, bottom: 24.h, left: 20.w, right: 20.w),
+          child: SmoothView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 14.h),
+                // content view
+                CommonAuthHeader(
+                    headerText: appText.select_your_role,
+                    bodyText: appText.choose_how_you_primarily_interact),
+                SizedBox(height: 32.h),
 
-              // content view
-              selectRoleView()
-            ],
+                // content view
+                selectRoleView()
+              ],
+            ),
           ),
         ),
       ),
@@ -91,37 +90,44 @@ class _SelectRolePageState extends State<SelectRolePage> {
           padding: EdgeInsets.zero,
           itemBuilder: (context, index) {
             RoleSelectionEnum role = roleList[index].roleSelectionEnum;
-            return Container(
-              padding: EdgeInsets.symmetric(vertical: 11.h, horizontal: 12.w),
-              decoration: BoxDecoration(
-                  color: roleComponentColor(role),
-                  border: Border.all(
-                      width: 1.h, color: roleComponentBorderColor(role)),
-                  borderRadius: BorderRadius.circular(15.r)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          roleList[index].roleName,
-                          style: textWith20W500(roleComponentTextColor(role)),
-                        ),
-                        Text(
-                          roleList[index].roleDescription,
-                          style: textWith14W400(roleComponentTextColor(role)),
-                        )
-                      ],
+            return InkWell(
+              onTap: () {
+                if(role == RoleSelectionEnum.selected){
+                  context.router.push(const SelectCommodityRoute());
+                }
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 11.h, horizontal: 12.w),
+                decoration: BoxDecoration(
+                    color: roleComponentColor(role),
+                    border: Border.all(
+                        width: 1.h, color: roleComponentBorderColor(role)),
+                    borderRadius: BorderRadius.circular(15.r)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            roleList[index].roleName,
+                            style: textWith20W500(roleComponentTextColor(role)),
+                          ),
+                          Text(
+                            roleList[index].roleDescription,
+                            style: textWith14W400(roleComponentTextColor(role)),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
 
-                  // role selection tag
-                  selectionTagWidget(role)
-                ],
+                    // role selection tag
+                    selectionTagWidget(role)
+                  ],
+                ),
               ),
             );
           },

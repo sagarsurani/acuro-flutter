@@ -18,4 +18,10 @@ class ColorConstants {
   static const Color otpInactiveColor = Color(0xFFEDEFF3);
   static const Color roleComingText = Color(0xFFBFC3C8);
   static const Color green = Color(0xFF36B37E);
+  static const Color border = Color(0xFFEDEFF3);
+  static const Color grey3 = Color(0xFF777F8A);
+  static const Color greyDark1 = Color(0xFF575757);
+  static const Color yellow = Color(0xFFFFB82E);
+  static const Color lightBlue = Color(0xFFEDF3FA);
+
 }

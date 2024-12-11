@@ -1,3 +1,4 @@
+import 'package:acuro/components/Common/CommonBackgroundView.dart';
 import 'package:acuro/components/Common/CommonSplashBackView.dart';
 import 'package:acuro/components/Common/CommonTextStyle.dart';
 import 'package:acuro/components/Common/CustomTextField.dart';
@@ -32,16 +33,16 @@ class _TakeUserDetailsPageState extends State<TakeUserDetailsPage> {
   String errorText = "";
 
   bool isNameValid() {
-    if (isNameContainsOnlyNumbers(firstNameController.text.trim()) ||
-        isNameContainsOnlyNumbers(lastNameController.text.trim())) {
+    if (!isNameContainsOnlyCharacters(firstNameController.text.trim()) ||
+        !isNameContainsOnlyCharacters(lastNameController.text.trim())) {
       return false;
     }
     return true;
   }
 
-  bool isNameContainsOnlyNumbers(String text) {
-    final RegExp numberRegex = RegExp(r'^[0-9]+$');
-    return numberRegex.hasMatch(text.replaceAll(' ', ''));
+  bool isNameContainsOnlyCharacters(String text) {
+    final RegExp characterRegex = RegExp(r'^[a-zA-Z]+$');
+    return characterRegex.hasMatch(text);
   }
 
   bool checkUserDetailsValidation() {
@@ -98,43 +99,48 @@ class _TakeUserDetailsPageState extends State<TakeUserDetailsPage> {
           AppUtils.closeTheKeyboard(context);
         },
         child: Scaffold(
-          body: Padding(
-            padding: EdgeInsets.only(
-                top: currentIndex == 0 ? 90.h : 60.h,
-                bottom: 24.h,
-                left: 20.w,
-                right: 20.w),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // back view
-                if (currentIndex != 0)
-                  CommonBackView(
-                    onTap: () {
-                      pageController.previousPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut);
-                      setState(() {});
-                    },
-                  ),
-                SizedBox(height: 14.h),
-                // content view
-                Expanded(
-                  child: PageView(
-                    controller: pageController,
-                    physics: const NeverScrollableScrollPhysics(),
-                    onPageChanged: (value) {
-                      currentIndex = value;
-                      setState(() {});
-                    },
-                    children: [
-                      firstAndLastNameView(appText),
-                      setYourPasswordView(appText),
-                    ],
-                  ),
+          backgroundColor: ColorConstants.white1,
+          body: CommonBackgroundView(
+            child: Padding(
+              padding: EdgeInsets.only(
+                  top: currentIndex == 0 ? 90.h : 60.h,
+                  bottom: 24.h,
+                  left: 20.w,
+                  right: 20.w),
+              child: SmoothView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // back view
+                    if (currentIndex != 0)
+                      CommonBackView(
+                        onTap: () {
+                          pageController.previousPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut);
+                          setState(() {});
+                        },
+                      ),
+                    SizedBox(height: 14.h),
+                    // content view
+                    Expanded(
+                      child: PageView(
+                        controller: pageController,
+                        physics: const NeverScrollableScrollPhysics(),
+                        onPageChanged: (value) {
+                          currentIndex = value;
+                          setState(() {});
+                        },
+                        children: [
+                          firstAndLastNameView(appText),
+                          setYourPasswordView(appText),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
@@ -159,6 +165,9 @@ class _TakeUserDetailsPageState extends State<TakeUserDetailsPage> {
             controller: firstNameController,
             hint: appText.first_name,
             keyboardType: TextInputType.name,
+            hasError: !isNameContainsOnlyCharacters(firstNameController.text)
+                ? hasError
+                : null,
             onChanged: (p0) {
               hasError = false;
               setState(() {});
@@ -168,6 +177,9 @@ class _TakeUserDetailsPageState extends State<TakeUserDetailsPage> {
           CustomTextField(
             controller: lastNameController,
             hint: appText.last_name,
+            hasError: !isNameContainsOnlyCharacters(lastNameController.text)
+                ? hasError
+                : null,
             keyboardType: TextInputType.name,
             onChanged: (p0) {
               hasError = false;
@@ -184,7 +196,7 @@ class _TakeUserDetailsPageState extends State<TakeUserDetailsPage> {
           // submit details button
           CommonButton(
               onTap: tapOnUserDetailsSubmit,
-              isEnable: checkUserDetailsValidation(),
+              isEnable: isNameValid(),
               buttonText: appText.continueText)
         ],
       ),

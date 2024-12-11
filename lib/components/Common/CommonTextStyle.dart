@@ -7,6 +7,12 @@ textWith10W500(
   return TextStyle(color: color, fontSize: 10.sp, fontWeight: FontWeight.w500);
 }
 
+textWith12W500(
+    Color color,
+    ) {
+  return TextStyle(color: color, fontSize: 12.sp, fontWeight: FontWeight.w500);
+}
+
 textWith14W400(
     Color color,
     ) {
@@ -38,6 +44,12 @@ textWith16W700(
     Color color,
     ) {
   return TextStyle(color: color, fontSize: 16.sp, fontWeight: FontWeight.w700);
+}
+
+textWith18W500(
+    Color color,
+    ) {
+  return TextStyle(color: color, fontSize: 18.sp, fontWeight: FontWeight.w500);
 }
 
 textWith20W400(

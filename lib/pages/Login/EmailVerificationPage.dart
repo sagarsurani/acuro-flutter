@@ -1,6 +1,7 @@
 
 import 'dart:async';
 import 'package:acuro/components/Common/AnimatedSwitcher.dart';
+import 'package:acuro/components/Common/CommonBackgroundView.dart';
 import 'package:acuro/components/Common/CommonButton.dart';
 import 'package:acuro/components/Common/CommonSplashBackView.dart';
 import 'package:acuro/components/Common/CustomTextField.dart';
@@ -98,44 +99,49 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
         AppUtils.closeTheKeyboard(context);
       },
       child: Scaffold(
-        body: Padding(
-          padding: EdgeInsets.only(
-              top: currentIndex == 0 ? 90.h : 60.h,
-              bottom: 24.h,
-              left: 20.w,
-              right: 20.w),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // back view
-              if (currentIndex != 0)
-                CommonBackView(
-                  onTap: () {
-                    pageController.previousPage(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut);
-                    _timer?.cancel();
-                    setState(() {});
-                  },
-                ),
-              SizedBox(height: 14.h),
-              // content view
-              Expanded(
-                child: PageView(
-                  controller: pageController,
-                  physics: const NeverScrollableScrollPhysics(),
-                  onPageChanged: (value) {
-                    currentIndex = value;
-                    setState(() {});
-                  },
-                  children: [
-                    emailView(appText),
-                    enterEmailOtpView(appText),
-                  ],
-                ),
+        backgroundColor: ColorConstants.white1,
+        body: CommonBackgroundView(
+          child: Padding(
+            padding: EdgeInsets.only(
+                top: currentIndex == 0 ? 90.h : 60.h,
+                bottom: 24.h,
+                left: 20.w,
+                right: 20.w),
+            child: SmoothView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // back view
+                  if (currentIndex != 0)
+                    CommonBackView(
+                      onTap: () {
+                        pageController.previousPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut);
+                        _timer?.cancel();
+                        setState(() {});
+                      },
+                    ),
+                  SizedBox(height: 14.h),
+                  // content view
+                  Expanded(
+                    child: PageView(
+                      controller: pageController,
+                      physics: const NeverScrollableScrollPhysics(),
+                      onPageChanged: (value) {
+                        currentIndex = value;
+                        setState(() {});
+                      },
+                      children: [
+                        emailView(appText),
+                        enterEmailOtpView(appText),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

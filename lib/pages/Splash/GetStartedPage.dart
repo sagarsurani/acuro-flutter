@@ -26,6 +26,10 @@ class _GetStartedPageState extends State<GetStartedPage> {
     context.router.push(const PhoneRegistrationRoute());
   }
 
+  void navigateToLoginRoute(){
+    context.router.push(const LoginRoute());
+  }
+
   @override
   Widget build(BuildContext context) {
     var appText = AppLocalizations.of(context)!;
@@ -39,7 +43,7 @@ class _GetStartedPageState extends State<GetStartedPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -59,14 +63,12 @@ class _GetStartedPageState extends State<GetStartedPage> {
                 Image.asset(ImageConstants.imgGraph, height: 252.h),
                 const Spacer(),
                 CommonButton(
-                    onTap: () {
-                      navigateToRegistrationRoute();
-                    },
+                    onTap: navigateToRegistrationRoute,
                     buttonText: appText.get_started,
                     margin: EdgeInsets.symmetric(horizontal: 20.w)),
                 SizedBox(height: 12.h),
                 CommonButton(
-                    onTap: () {},
+                    onTap: navigateToLoginRoute,
                     buttonText: appText.log_in,
                     backGroundColor: ColorConstants.blueLight01,
                     textStyle: textWith16W700(ColorConstants.blue),

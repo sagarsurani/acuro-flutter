@@ -1,4 +1,3 @@
-
 import 'package:acuro/components/Common/CommonTextStyle.dart';
 import 'package:acuro/core/utils/AppUtils.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +28,7 @@ class _OtpViewState extends State<OtpView> {
       appContext: context,
       obscureText: false,
       animationType: AnimationType.fade,
-      inputFormatters: AppUtils.onlyDigitsFormatter(),
+      inputFormatters: AppUtils.onlyDigitsFormatter(0),
       textStyle: textWith20W400(ColorConstants.black1),
       pinTheme: PinTheme(
         inactiveFillColor: ColorConstants.otpInactiveColor,

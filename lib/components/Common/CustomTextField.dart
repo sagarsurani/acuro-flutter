@@ -13,6 +13,7 @@ class CustomTextField extends StatelessWidget {
   final String? label;
   final bool? isReadOnly;
   final bool? isPng;
+  final bool? hasError;
   final Color? backgroundColor;
   final FocusNode? focusNode;
   final TextInputType? keyboardType;
@@ -28,10 +29,9 @@ class CustomTextField extends StatelessWidget {
   final TextCapitalization? textCapitalization;
   final EdgeInsetsGeometry? contentPadding;
   final bool? isObscureText;
-  final bool? isShadowRemoved;
+  final double? height;
   final bool? enableSuggestions;
   final TextInputAction? textInputAction;
-  final BoxShadow? boxShadow;
   void Function()? onTapOnIcon;
   void Function(String)? onChanged;
   void Function(String)? onFieldSubmitted;
@@ -47,7 +47,9 @@ class CustomTextField extends StatelessWidget {
       this.backgroundColor,
       this.controller,
       this.alignment,
+      this.hasError,
       this.focusNode,
+      this.height,
       this.onChanged,
       this.onFieldSubmitted,
       this.suffixIcon,
@@ -56,12 +58,10 @@ class CustomTextField extends StatelessWidget {
       this.hint,
       this.minLines,
       this.isPng,
-      this.boxShadow,
       this.isObscureText,
       this.contentPadding,
       this.obscuringCharacter,
       this.maxLines,
-      this.isShadowRemoved,
       this.fontStyle,
       this.hintStyle,
       this.borderRadius,
@@ -77,11 +77,14 @@ class CustomTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 61.h,
+      height: height ?? 61.h,
       alignment: alignment,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10.r),
-        color: backgroundColor ?? ColorConstants.textFieldColor,
+        borderRadius: BorderRadius.circular(borderRadius ?? 15.r),
+        color: backgroundColor ?? ColorConstants.countryBackground,
+        border: Border.all(
+            color: (hasError ?? false) ? Colors.red : Colors.transparent,
+            width: 1.h),
       ),
       child: TextField(
         cursorColor: ColorConstants.blue,
@@ -111,6 +114,7 @@ class CustomTextField extends StatelessWidget {
           contentPadding: contentPadding ?? EdgeInsets.all(16.r),
           border: InputBorder.none,
           prefixIcon: prefixWidget,
+          prefixIconConstraints: const BoxConstraints(),
           suffixIcon: (suffixIcon != null)
               ? InkWell(
                   onTap: onTapOnIcon ?? () {},
