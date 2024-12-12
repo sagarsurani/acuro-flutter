@@ -6,10 +6,13 @@ import 'package:acuro/components/Common/CommonSplashBackView.dart';
 import 'package:acuro/components/Common/CommonTextStyle.dart';
 import 'package:acuro/components/Login/CommonAuthHeader.dart';
 import 'package:acuro/components/Login/OTPView.dart';
+import 'package:acuro/core/constants/Constants.dart';
 import 'package:acuro/core/navigator/AppRouter.gr.dart';
+import 'package:acuro/core/persistence/PreferenceHelper.dart';
 import 'package:acuro/core/theme/AppColors.dart';
 import 'package:acuro/core/utils/AppUtils.dart';
 import 'package:acuro/core/utils/TimeUtils.dart';
+import 'package:acuro/models/Auth/OtpLimitationModel.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -82,6 +85,53 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
     super.dispose();
   }
 
+  static Future<void> setOtpValidation({
+    required OTPLimitationModel otpLimitationModel,
+  }) async {
+    List<OTPLimitationModel> otpList =
+        await PreferenceHelper.getOtpLimitation();
+    int index = otpList.indexWhere(
+      (element) =>
+          element.emailOrPhoneName == otpLimitationModel.emailOrPhoneName &&
+          element.otpFrom == otpLimitationModel.otpFrom,
+    );
+    if (index != -1) {
+      otpList[index].limit += 1;
+      otpList[index].time = DateTime.now().toIso8601String();
+    } else {
+      otpList.add(OTPLimitationModel(
+        otpFrom: otpLimitationModel.otpFrom,
+        emailOrPhoneName: otpLimitationModel.emailOrPhoneName,
+        limit: 1,
+        time: DateTime.now().toIso8601String(),
+      ));
+    }
+    await PreferenceHelper.setOtpLimitation(otpUserList: otpList);
+  }
+
+  static Future<int> getOtpValidation(
+      {required String emailOrPhoneName, required OTPEnum otpFrom}) async {
+    List<OTPLimitationModel> otpList =
+        await PreferenceHelper.getOtpLimitation();
+
+    otpList.removeWhere((element) {
+      DateTime elementTime = DateTime.parse(element.time);
+      DateTime currentTime = DateTime.now();
+      Duration difference = currentTime.difference(elementTime);
+      return difference.inHours >= 8;
+    });
+
+    int index = otpList.indexWhere(
+      (element) =>
+          element.emailOrPhoneName == emailOrPhoneName &&
+          element.otpFrom == otpFrom,
+    );
+    if(index != -1){
+      return otpList[index].limit;
+    }
+    return 0;
+  }
+
   @override
   Widget build(BuildContext context) {
     var appText = AppLocalizations.of(context)!;
@@ -93,8 +143,8 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
         backgroundColor: ColorConstants.white1,
         body: CommonBackgroundView(
           child: Padding(
-            padding:
-                EdgeInsets.only(top: 60.h, bottom: 24.h, left: 20.w, right: 20.w),
+            padding: EdgeInsets.only(
+                top: 60.h, bottom: 24.h, left: 20.w, right: 20.w),
             child: SmoothView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -171,7 +221,7 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
           )
         : Text(
             "${appText.resend_code_in}${TimeUtils.otpTime(timeLeft)}",
-            style: textWith16W400(ColorConstants.black1),
+            style: textWith16W400(Theme.of(context).focusColor),
           );
   }
 }

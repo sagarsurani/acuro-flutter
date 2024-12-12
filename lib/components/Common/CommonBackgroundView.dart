@@ -11,16 +11,16 @@ class CommonBackgroundView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            ColorConstants.splashGradient1,
-            ColorConstants.white1,
-            ColorConstants.white1,
+            Theme.of(context).shadowColor,
+            Theme.of(context).primaryColor,
+            Theme.of(context).primaryColor,
           ],
-          stops: [0.0, 0.2, 1.0],
+          stops: const [0.0, 0.2, 1.0],
         ),
       ),
       child: child,

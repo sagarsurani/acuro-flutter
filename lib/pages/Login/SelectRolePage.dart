@@ -1,12 +1,13 @@
-
 import 'package:acuro/components/Common/AnimatedSwitcher.dart';
 import 'package:acuro/components/Common/CommonBackgroundView.dart';
+import 'package:acuro/components/Common/CommonButton.dart';
 import 'package:acuro/components/Common/CommonTextStyle.dart';
 import 'package:acuro/components/Login/CommonAuthHeader.dart';
 import 'package:acuro/core/constants/Constants.dart';
 import 'package:acuro/core/constants/ImageConstants.dart';
 import 'package:acuro/core/navigator/AppRouter.gr.dart';
 import 'package:acuro/core/theme/AppColors.dart';
+import 'package:acuro/core/utils/AppUtils.dart';
 import 'package:acuro/models/Model.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
@@ -33,15 +34,17 @@ class _SelectRolePageState extends State<SelectRolePage> {
 
   Color roleComponentColor(RoleSelectionEnum role) {
     return role == RoleSelectionEnum.comingSoon
-        ? ColorConstants.countryBackground
+        ? Theme.of(context).secondaryHeaderColor
         : role == RoleSelectionEnum.selected
-            ? ColorConstants.blue.withOpacity(0.1)
+            ? ColorConstants.blue
+                .withOpacity(AppUtils.isDarkTheme(context) ? 0.3 : 0.1)
             : ColorConstants.black1;
   }
 
   Color roleComponentTextColor(RoleSelectionEnum role) {
     return role == RoleSelectionEnum.comingSoon
         ? ColorConstants.roleComingText
+            .withOpacity(AppUtils.isDarkTheme(context) ? 0.5 : 1)
         : role == RoleSelectionEnum.selected
             ? ColorConstants.blue
             : ColorConstants.black1;
@@ -75,7 +78,14 @@ class _SelectRolePageState extends State<SelectRolePage> {
                 SizedBox(height: 32.h),
 
                 // content view
-                selectRoleView()
+                selectRoleView(),
+
+                // submit button
+                CommonButton(
+                    onTap: () {
+                      context.router.push(const SelectCommodityRoute());
+                    },
+                    buttonText: appText.continueText)
               ],
             ),
           ),
@@ -90,44 +100,37 @@ class _SelectRolePageState extends State<SelectRolePage> {
           padding: EdgeInsets.zero,
           itemBuilder: (context, index) {
             RoleSelectionEnum role = roleList[index].roleSelectionEnum;
-            return InkWell(
-              onTap: () {
-                if(role == RoleSelectionEnum.selected){
-                  context.router.push(const SelectCommodityRoute());
-                }
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 11.h, horizontal: 12.w),
-                decoration: BoxDecoration(
-                    color: roleComponentColor(role),
-                    border: Border.all(
-                        width: 1.h, color: roleComponentBorderColor(role)),
-                    borderRadius: BorderRadius.circular(15.r)),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            roleList[index].roleName,
-                            style: textWith20W500(roleComponentTextColor(role)),
-                          ),
-                          Text(
-                            roleList[index].roleDescription,
-                            style: textWith14W400(roleComponentTextColor(role)),
-                          )
-                        ],
-                      ),
+            return Container(
+              padding: EdgeInsets.symmetric(vertical: 11.h, horizontal: 12.w),
+              decoration: BoxDecoration(
+                  color: roleComponentColor(role),
+                  border: Border.all(
+                      width: 1.h, color: roleComponentBorderColor(role)),
+                  borderRadius: BorderRadius.circular(15.r)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          roleList[index].roleName,
+                          style: textWith20W500(roleComponentTextColor(role)),
+                        ),
+                        Text(
+                          roleList[index].roleDescription,
+                          style: textWith14W400(roleComponentTextColor(role)),
+                        )
+                      ],
                     ),
+                  ),
 
-                    // role selection tag
-                    selectionTagWidget(role)
-                  ],
-                ),
+                  // role selection tag
+                  selectionTagWidget(role)
+                ],
               ),
             );
           },
@@ -142,9 +145,9 @@ class _SelectRolePageState extends State<SelectRolePage> {
     var appText = AppLocalizations.of(context)!;
     return role == RoleSelectionEnum.comingSoon
         ? Text(
-          appText.coming_soon,
-          style: textWith10W500(ColorConstants.green),
-        )
+            appText.coming_soon,
+            style: textWith10W500(ColorConstants.green),
+          )
         : role == RoleSelectionEnum.selected
             ? SvgPicture.asset(
                 ImageConstants.icRightBlue,

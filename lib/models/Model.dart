@@ -15,8 +15,7 @@ class CommodityCategoryModel {
   final String name;
   bool isSelected;
 
-  CommodityCategoryModel(
-      {required this.name, required this.isSelected});
+  CommodityCategoryModel({required this.name, required this.isSelected});
 }
 
 class CommodityModel {

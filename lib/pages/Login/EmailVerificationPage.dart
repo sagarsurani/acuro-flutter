@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'package:acuro/components/Common/AnimatedSwitcher.dart';
 import 'package:acuro/components/Common/CommonBackgroundView.dart';
@@ -155,15 +154,9 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(height: 14.h),
-          Text(
-            appText.what_is_your_email,
-            style: textWith24W500(ColorConstants.black1),
-          ),
-          SizedBox(height: 4.h),
-          Text(
-            appText.enter_your_work_email,
-            style: textWith14W400(ColorConstants.grey1),
-          ),
+          CommonAuthHeader(
+              headerText: appText.what_is_your_email,
+              bodyText: appText.enter_your_work_email),
           SizedBox(height: 32.h),
           // email text field
           CustomTextField(
@@ -247,7 +240,7 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
           )
         : Text(
             "${appText.resend_code_in}${TimeUtils.otpTime(timeLeft)}",
-            style: textWith16W400(ColorConstants.black1),
+            style: textWith16W400(Theme.of(context).focusColor),
           );
   }
 }

@@ -1,11 +1,12 @@
-
 import 'package:acuro/components/Common/AnimatedSwitcher.dart';
 import 'package:acuro/components/Common/CommonButton.dart';
 import 'package:acuro/components/Common/CommonSplashBackView.dart';
 import 'package:acuro/components/Common/CommonTextStyle.dart';
+import 'package:acuro/components/Login/CommonAuthHeader.dart';
 import 'package:acuro/core/constants/ImageConstants.dart';
 import 'package:acuro/core/navigator/AppRouter.gr.dart';
 import 'package:acuro/core/theme/AppColors.dart';
+import 'package:acuro/core/utils/AppUtils.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -21,12 +22,11 @@ class GetStartedPage extends StatefulWidget {
 }
 
 class _GetStartedPageState extends State<GetStartedPage> {
-
-  void navigateToRegistrationRoute(){
+  void navigateToRegistrationRoute() {
     context.router.push(const PhoneRegistrationRoute());
   }
 
-  void navigateToLoginRoute(){
+  void navigateToLoginRoute() {
     context.router.push(const LoginRoute());
   }
 
@@ -52,15 +52,21 @@ class _GetStartedPageState extends State<GetStartedPage> {
                           height: 49.h, width: 64.w),
                       SizedBox(height: 79.h),
                       Text(appText.predict,
-                          style: textWith40W500WithGradient(
-                              [ColorConstants.blueShader, ColorConstants.blueLight])),
+                          style: textWith40W500WithGradient([
+                            ColorConstants.blueShader,
+                            ColorConstants.blueLight
+                          ])),
                       Text(appText.with_confidence,
-                          style: textWith40W700(ColorConstants.blueDark))
+                          style: textWith40W700(Theme.of(context).cardColor))
                     ],
                   ),
                 ),
                 SizedBox(height: 37.h),
-                Image.asset(ImageConstants.imgGraph, height: 252.h),
+                Image.asset(
+                    AppUtils.isDarkTheme(context)
+                        ? ImageConstants.imgGraphDark
+                        : ImageConstants.imgGraph,
+                    height: 252.h),
                 const Spacer(),
                 CommonButton(
                     onTap: navigateToRegistrationRoute,

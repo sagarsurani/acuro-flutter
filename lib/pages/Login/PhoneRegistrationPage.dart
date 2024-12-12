@@ -5,7 +5,8 @@ import 'package:acuro/components/Common/CommonSplashBackView.dart';
 import 'package:acuro/components/Common/CommonTextStyle.dart';
 import 'package:acuro/components/Common/CountryCodePicker.dart';
 import 'package:acuro/components/Common/CustomTextField.dart';
-import 'package:acuro/core/constants/Constants.dart';
+import 'package:acuro/components/Login/CommonAuthHeader.dart';
+import 'package:acuro/core/constants/EnvVariable.dart';
 import 'package:acuro/core/navigator/AppRouter.gr.dart';
 import 'package:acuro/core/theme/AppColors.dart';
 import 'package:acuro/core/utils/AppUtils.dart';
@@ -48,7 +49,7 @@ class _PhoneRegistrationPageState extends State<PhoneRegistrationPage> {
         OtpVerifyRoute(phoneNumber: "$countryCode ${phoneController.text}"));
   }
 
-  void navigateToLoginRoute(){
+  void navigateToLoginRoute() {
     context.router.push(const LoginRoute());
   }
 
@@ -60,11 +61,10 @@ class _PhoneRegistrationPageState extends State<PhoneRegistrationPage> {
         AppUtils.closeTheKeyboard(context);
       },
       child: Scaffold(
-        backgroundColor: ColorConstants.white1,
         body: CommonBackgroundView(
           child: Padding(
-            padding:
-                EdgeInsets.only(top: 60.h, bottom: 24.h, left: 20.w, right: 20.w),
+            padding: EdgeInsets.only(
+                top: 60.h, bottom: 24.h, left: 20.w, right: 20.w),
             child: SmoothView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -76,15 +76,7 @@ class _PhoneRegistrationPageState extends State<PhoneRegistrationPage> {
                     },
                   ),
                   SizedBox(height: 14.h),
-                  Text(
-                    appText.what_is_your_phone_number,
-                    style: textWith24W500(ColorConstants.black1),
-                  ),
-                  SizedBox(height: 4.h),
-                  Text(
-                    appText.enter_your_phone_number_desc,
-                    style: textWith14W400(ColorConstants.grey1),
-                  ),
+                  headerView(appText),
                   SizedBox(height: 32.h),
                   Row(
                     children: [
@@ -98,6 +90,7 @@ class _PhoneRegistrationPageState extends State<PhoneRegistrationPage> {
                             countryCode = '+${country.phoneCode}';
                             countryName = country.name;
                             countryFlag = country.countryCode;
+                            phoneController.clear();
                           });
                         },
                       ),
@@ -109,7 +102,8 @@ class _PhoneRegistrationPageState extends State<PhoneRegistrationPage> {
                         controller: phoneController,
                         textInputAction: TextInputAction.done,
                         keyboardType: TextInputType.number,
-                        inputFormatters: AppUtils.onlyDigitsFormatter(maxPhoneLength),
+                        inputFormatters:
+                            AppUtils.onlyDigitsFormatter(max_number),
                       ))
                     ],
                   ),
@@ -137,6 +131,13 @@ class _PhoneRegistrationPageState extends State<PhoneRegistrationPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget headerView(AppLocalizations appText) {
+    return CommonAuthHeader(
+      headerText: appText.what_is_your_phone_number,
+      bodyText: appText.enter_your_phone_number_desc,
     );
   }
 }

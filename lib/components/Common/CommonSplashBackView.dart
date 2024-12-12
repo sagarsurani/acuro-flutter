@@ -12,13 +12,13 @@ class CommonSplashBackView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            ColorConstants.splashGradient1,
-            ColorConstants.splashGradient2,
+            Theme.of(context).splashColor,
+            Theme.of(context).highlightColor,
           ],
         ),
       ),
@@ -34,6 +34,6 @@ class CommonBackView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-        onTap: onTap, child: SizedBox(child: SvgPicture.asset(ImageConstants.icArrowLeft)));
+        onTap: onTap, child: SizedBox(child: SvgPicture.asset(ImageConstants.icArrowLeft,colorFilter: ColorFilter.mode(Theme.of(context).focusColor, BlendMode.srcIn),)));
   }
 }

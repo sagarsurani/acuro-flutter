@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,7 +5,6 @@ import 'core/constants/Constants.dart';
 import 'core/navigator/AppRouter.dart';
 import 'core/theme/AppTheme.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
 
 final appRouter = AppRouter();
 
@@ -32,7 +30,8 @@ class _AppState extends State<App> {
         builder: (BuildContext context, Widget? child) {
           return MaterialApp.router(
             title: ACURO,
-            theme: AppTheme.appTheme,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
             backButtonDispatcher: RootBackButtonDispatcher(),
             routeInformationParser: appRouter.defaultRouteParser(),
             routerDelegate: appRouter.delegate(

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "361342922595",
+    "project_id": "acuro-app-qa",
+    "storage_bucket": "acuro-app-qa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:361342922595:android:4af2dd2f90101011b9ad56",
+        "android_client_info": {
+          "package_name": "com.app.acuro.android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2b3l6OVV0_88R7ohvr-isHfKMsEC415Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

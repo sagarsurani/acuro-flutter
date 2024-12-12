@@ -81,7 +81,7 @@ class CustomTextField extends StatelessWidget {
       alignment: alignment,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(borderRadius ?? 15.r),
-        color: backgroundColor ?? ColorConstants.countryBackground,
+        color: backgroundColor ?? Theme.of(context).secondaryHeaderColor,
         border: Border.all(
             color: (hasError ?? false) ? Colors.red : Colors.transparent,
             width: 1.h),
@@ -106,11 +106,11 @@ class CustomTextField extends StatelessWidget {
         onSubmitted: onFieldSubmitted,
         keyboardType: keyboardType,
         inputFormatters: inputFormatters ?? [],
-        style: fontStyle ?? textWith20W400(ColorConstants.black1),
+        style: fontStyle ?? textWith20W400(Theme.of(context).focusColor),
         decoration: InputDecoration(
           isDense: true,
           hintText: hint,
-          hintStyle: hintStyle ?? textWith20W400(ColorConstants.grey2),
+          hintStyle: hintStyle ?? textWith20W400(Theme.of(context).hintColor),
           contentPadding: contentPadding ?? EdgeInsets.all(16.r),
           border: InputBorder.none,
           prefixIcon: prefixWidget,

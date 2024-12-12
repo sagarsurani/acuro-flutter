@@ -1,3 +1,4 @@
+
 import 'package:acuro/components/Common/AnimatedSwitcher.dart';
 import 'package:acuro/components/Common/CommonBackgroundView.dart';
 import 'package:acuro/components/Common/CommonButton.dart';
@@ -6,6 +7,7 @@ import 'package:acuro/components/Common/CommonTabView.dart';
 import 'package:acuro/components/Common/CommonTextStyle.dart';
 import 'package:acuro/components/Common/CountryCodePicker.dart';
 import 'package:acuro/components/Common/CustomTextField.dart';
+import 'package:acuro/core/constants/EnvVariable.dart';
 import 'package:acuro/core/navigator/AppRouter.gr.dart';
 import 'package:acuro/core/theme/AppColors.dart';
 import 'package:acuro/core/utils/AppUtils.dart';
@@ -92,7 +94,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
                 Text(
                   appText.forgot_password,
                   textAlign: TextAlign.center,
-                  style: textWith24W500(ColorConstants.black1),
+                  style: textWith24W500(Theme.of(context).focusColor),
                 ),
                 SizedBox(height: 12.h),
                 CommonTabHeaderView(
@@ -183,10 +185,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
                   child: CustomTextField(
                 hint: appText.mobile_number,
                 controller: phoneController,
-                backgroundColor: ColorConstants.countryBackground,
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
-                inputFormatters: AppUtils.onlyDigitsFormatter(maxPhoneLength),
+                inputFormatters: AppUtils.onlyDigitsFormatter(max_number),
                 onChanged: (p0) {
                   setState(() {});
                 },

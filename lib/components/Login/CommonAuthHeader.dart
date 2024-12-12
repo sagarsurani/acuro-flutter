@@ -26,12 +26,12 @@ class _CommonAuthHeaderState extends State<CommonAuthHeader> {
         children: [
           Text(
             widget.headerText,
-            style: textWith24W500(ColorConstants.black1),
+            style: textWith24W500(Theme.of(context).focusColor),
           ),
           SizedBox(height: 4.h),
           Text(
             widget.bodyText,
-            style: textWith14W400(ColorConstants.grey1),
+            style: textWith14W400(Theme.of(context).canvasColor),
           ),
         ],
       ),

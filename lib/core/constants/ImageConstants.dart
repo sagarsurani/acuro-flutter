@@ -8,6 +8,9 @@ class ImageConstants {
   static const icRightBlue = 'assets/icons/rightBlue.svg';
   static const icWrong = 'assets/icons/wrong.svg';
   static const icSearch = 'assets/icons/search.svg';
+  static const icEyeOpened = 'assets/icons/eye.svg';
+  static const icEyesClosed = 'assets/icons/eyesClose.svg';
+  static const icRedClose = 'assets/icons/redClose.svg';
 
 
   //images
@@ -16,5 +19,9 @@ class ImageConstants {
   static const imgConfirmSelection = 'assets/images/confirm-selection.png';
   static const imgVerifying = 'assets/images/verifying.png';
   static const imgUsaDummy = 'assets/images/usaDummy.png';
+  static const imgAddDark = 'assets/images/darkAdd.png';
+  static const imgConfirmSelectionDark = 'assets/images/confirmSelectionDark.png';
+  static const imgGraphDark = 'assets/images/graphDark.png';
+  static const imgVerifyingDark = 'assets/images/verifyingDark.png';
 
 }

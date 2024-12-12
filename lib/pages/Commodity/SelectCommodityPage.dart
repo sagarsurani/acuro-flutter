@@ -1,3 +1,4 @@
+import 'package:acuro/components/Common/CommonBackgroundView.dart';
 import 'package:acuro/components/Common/CommonButton.dart';
 import 'package:acuro/components/Common/CommonSplashBackView.dart';
 import 'package:acuro/components/Common/CommonTextStyle.dart';
@@ -6,6 +7,7 @@ import 'package:acuro/core/constants/Constants.dart';
 import 'package:acuro/core/constants/ImageConstants.dart';
 import 'package:acuro/core/navigator/AppRouter.gr.dart';
 import 'package:acuro/core/theme/AppColors.dart';
+import 'package:acuro/core/utils/AppUtils.dart';
 import 'package:acuro/models/Model.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
@@ -61,58 +63,59 @@ class _SelectCommodityPageState extends State<SelectCommodityPage> {
   Widget build(BuildContext context) {
     var appText = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: ColorConstants.white1,
-      body: Padding(
-        padding:
-            EdgeInsets.only(top: 60.h, bottom: 24.h, left: 20.w, right: 20.w),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // back view
-            CommonBackView(
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            SizedBox(height: 14.h),
-            Text(
-              appText.select_commodity,
-              style: textWith24W500(ColorConstants.black1),
-            ),
-            SizedBox(height: 16.h),
-            CustomTextField(
-              height: 48.h,
-              alignment: Alignment.center,
-              backgroundColor: ColorConstants.countryBackground,
-              controller: searchController,
-              fontStyle: textWith16W400(ColorConstants.black1),
-              hintStyle: textWith16W400(ColorConstants.grey2),
-              contentPadding: EdgeInsets.all(10.h),
-              prefixWidget: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                child: SvgPicture.asset(
-                  ImageConstants.icSearch,
-                  height: 16.r,
-                  width: 16.r,
-                ),
+      body: CommonBackgroundView(
+        child: Padding(
+          padding:
+              EdgeInsets.only(top: 60.h, bottom: 24.h, left: 20.w, right: 20.w),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // back view
+              CommonBackView(
+                onTap: () {
+                  Navigator.pop(context);
+                },
               ),
-              hint: appText.search,
-              onChanged: (value) {},
-            ),
-            SizedBox(height: 16.h),
-            // category selection
-            commoditySelection(),
-            SizedBox(height: 24.h),
-            // contentView
-            contentView(appText),
-            SizedBox(height: 16.h),
-            // submit button
-            CommonButton(
-                onTap: navigateToConfirmCommodityPage,
-                isEnable: selectedCommodityList.isNotEmpty,
-                buttonText: appText.continueText)
-          ],
+              SizedBox(height: 14.h),
+              Text(
+                appText.select_commodity,
+                style: textWith24W500(Theme.of(context).focusColor),
+              ),
+              SizedBox(height: 16.h),
+              CustomTextField(
+                height: 48.h,
+                alignment: Alignment.center,
+                backgroundColor: Theme.of(context).secondaryHeaderColor,
+                controller: searchController,
+                fontStyle: textWith16W400(Theme.of(context).focusColor),
+                hintStyle: textWith16W400(Theme.of(context).hintColor),
+                contentPadding: EdgeInsets.all(10.h),
+                prefixWidget: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  child: SvgPicture.asset(
+                    ImageConstants.icSearch,
+                    height: 16.r,
+                    width: 16.r,
+                  ),
+                ),
+                hint: appText.search,
+                onChanged: (value) {},
+              ),
+              SizedBox(height: 16.h),
+              // category selection
+              commoditySelection(),
+              SizedBox(height: 24.h),
+              // contentView
+              contentView(appText),
+              SizedBox(height: 16.h),
+              // submit button
+              CommonButton(
+                  onTap: navigateToConfirmCommodityPage,
+                  isEnable: selectedCommodityList.isNotEmpty,
+                  buttonText: appText.continueText)
+            ],
+          ),
         ),
       ),
     );
@@ -132,14 +135,14 @@ class _SelectCommodityPageState extends State<SelectCommodityPage> {
             padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 7.h),
             decoration: BoxDecoration(
                 color: category.isSelected
-                    ? ColorConstants.countryBackground
-                    : ColorConstants.white1,
+                    ? Theme.of(context).secondaryHeaderColor
+                    : Theme.of(context).primaryColor,
                 borderRadius: BorderRadius.circular(100.r)),
             child: Text(
               category.name,
               style: textWith14W500(category.isSelected
-                  ? ColorConstants.black1
-                  : ColorConstants.grey1),
+                  ? Theme.of(context).focusColor
+                  : Theme.of(context).hintColor),
             ),
           ),
         );
@@ -159,8 +162,8 @@ class _SelectCommodityPageState extends State<SelectCommodityPage> {
           return Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15.r),
-                border: Border.all(color: ColorConstants.border, width: 1.h)
-            ),
+                border: Border.all(
+                    color: Theme.of(context).dividerColor, width: 1.h)),
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 20.h),
               child: Column(
@@ -183,7 +186,7 @@ class _SelectCommodityPageState extends State<SelectCommodityPage> {
                         children: [
                           Text(
                             commodity,
-                            style: textWith18W500(ColorConstants.black1),
+                            style: textWith18W500(Theme.of(context).focusColor),
                           ),
                           if (selectedCommodityList
                               .contains(commodityList[index])) ...[
@@ -206,17 +209,15 @@ class _SelectCommodityPageState extends State<SelectCommodityPage> {
                                       .add(commodityList[index]);
                                 });
                               },
-                              child: Container(
+                              child: SizedBox(
                                 height: 24.r,
                                 width: 24.r,
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: ColorConstants.otpInactiveColor,
-                                ),
                                 child: Center(
                                     child: ClipOval(
                                         child: Image.asset(
-                                            ImageConstants.imgAdd))),
+                                            AppUtils.isDarkTheme(context)
+                                                ? ImageConstants.imgAddDark
+                                                : ImageConstants.imgAdd))),
                               ),
                             )
                           ]
@@ -257,18 +258,18 @@ class _SelectCommodityPageState extends State<SelectCommodityPage> {
         SizedBox(height: 14.h),
         Stack(
           children: [
-            const Divider(color: ColorConstants.border),
+            Divider(color: Theme.of(context).dividerColor),
             Padding(
               padding: EdgeInsets.only(left: 12.w),
               child: Container(
                 height: 20.h,
                 padding: EdgeInsets.symmetric(horizontal: 8.w),
                 decoration: BoxDecoration(
-                    color: ColorConstants.countryBackground,
+                    color: Theme.of(context).secondaryHeaderColor,
                     borderRadius: BorderRadius.circular(5.r)),
                 child: Text(
                   appText.select_up_to_five_market,
-                  style: textWith12W500(ColorConstants.black1),
+                  style: textWith12W500(Theme.of(context).canvasColor),
                 ),
               ),
             )
@@ -283,14 +284,14 @@ class _SelectCommodityPageState extends State<SelectCommodityPage> {
             children: [
               Text(
                 appText.spot_market,
-                style: textWith14W500(ColorConstants.grey3),
+                style: textWith14W500(Theme.of(context).canvasColor),
               ),
               SizedBox(height: 8.h),
               commonMarketSelectionView(commodity.spotMarket, commodity),
               SizedBox(height: 16.h),
               Text(
                 appText.future_market,
-                style: textWith14W500(ColorConstants.grey3),
+                style: textWith14W500(Theme.of(context).canvasColor),
               ),
               SizedBox(height: 8.h),
               commonMarketSelectionView(commodity.futureMarket, commodity)
@@ -323,8 +324,9 @@ class _SelectCommodityPageState extends State<SelectCommodityPage> {
             padding: EdgeInsets.all(8.r),
             decoration: BoxDecoration(
               color: market.isSelected
-                  ? ColorConstants.blue.withOpacity(0.1)
-                  : ColorConstants.countryBackground,
+                  ? ColorConstants.blue
+                      .withOpacity(AppUtils.isDarkTheme(context) ? 0.3 : 0.1)
+                  : Theme.of(context).secondaryHeaderColor,
               border: Border.all(
                   color: market.isSelected
                       ? ColorConstants.blue
@@ -332,11 +334,24 @@ class _SelectCommodityPageState extends State<SelectCommodityPage> {
                   width: 1.h),
               borderRadius: BorderRadius.circular(100.r),
             ),
-            child: Text(
-              market.name,
-              style: textWith14W500(market.isSelected
-                  ? ColorConstants.blue
-                  : ColorConstants.black1),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Image.asset(
+                  ImageConstants.imgUsaDummy,
+                  height: 20.r,
+                  width: 20.r,
+                ),
+                SizedBox(width: 5.w),
+                Text(
+                  market.name,
+                  style: textWith14W500(market.isSelected
+                      ? ColorConstants.blue
+                      : Theme.of(context).focusColor),
+                ),
+              ],
             ),
           ),
         );

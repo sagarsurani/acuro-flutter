@@ -1,19 +1,28 @@
 import 'dart:convert';
+import 'package:acuro/models/Auth/OtpLimitationModel.dart';
 import 'Preferences.dart';
 
 class PreferenceHelper {
-  // static const accessToken = "access_token";
-  // static setAccessToken(String token) async {
-  //   await Preferences.setString(accessToken, json.encode(token));
-  // }
-  //
-  // static getAccessToken() async {
-  //   String? data = await Preferences.getString(accessToken, null);
-  //   return data;
-  // }
+  static const otpValidation = "otp_validation";
 
-  // static Future<void> clearPreference() async {
-  //   await Preferences.remove(accessToken);
-  // }
+  static setOtpLimitation(
+      {required List<OTPLimitationModel> otpUserList}) async {
+    await Preferences.setString(otpValidation, json.encode(otpUserList));
+  }
 
+  static getOtpLimitation() async {
+    List<OTPLimitationModel> userList = [];
+    String? data = await Preferences.getString(otpValidation, null);
+    if (data != null && data.isNotEmpty) {
+      var test = jsonDecode(data) as List<dynamic>;
+      for (var v in test) {
+        userList.add(OTPLimitationModel.fromJson(v));
+      }
+    }
+    return userList;
+  }
+
+  static clearOtpLimitation() async {
+    await Preferences.remove(otpValidation);
+  }
 }

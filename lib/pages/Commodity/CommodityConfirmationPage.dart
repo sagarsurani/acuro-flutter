@@ -1,8 +1,10 @@
+import 'package:acuro/components/Common/CommonBackgroundView.dart';
 import 'package:acuro/components/Common/CommonButton.dart';
 import 'package:acuro/components/Common/CommonTextStyle.dart';
 import 'package:acuro/core/constants/Constants.dart';
 import 'package:acuro/core/constants/ImageConstants.dart';
 import 'package:acuro/core/theme/AppColors.dart';
+import 'package:acuro/core/utils/AppUtils.dart';
 import 'package:acuro/models/Model.dart';
 import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
@@ -31,22 +33,23 @@ class _CommodityConfirmationPageState extends State<CommodityConfirmationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorConstants.white1,
-      body: Padding(
-        padding:
-            EdgeInsets.only(top: 80.h, bottom: 24.h, left: 20.w, right: 20.w),
-        child: Stack(
-          alignment: Alignment.bottomCenter,
-          children: [
-            Column(
-              children: [
-                headerView(),
-                verifyTitle(),
-                viewSelectedCommodityWidget(),
-              ],
-            ),
-            button()
-          ],
+      body: CommonBackgroundView(
+        child: Padding(
+          padding:
+              EdgeInsets.only(top: 80.h, bottom: 24.h, left: 20.w, right: 20.w),
+          child: Stack(
+            alignment: Alignment.bottomCenter,
+            children: [
+              Column(
+                children: [
+                  headerView(),
+                  verifyTitle(),
+                  viewSelectedCommodityWidget(),
+                ],
+              ),
+              button()
+            ],
+          ),
         ),
       ),
     );
@@ -59,10 +62,16 @@ class _CommodityConfirmationPageState extends State<CommodityConfirmationPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (commodityStatus == CommodityStatus.confirm) ...[
-          Image.asset(ImageConstants.imgConfirmSelection,
-              height: 138.r, width: 138.r)
+          Image.asset(
+              AppUtils.isDarkTheme(context)
+                  ? ImageConstants.imgConfirmSelectionDark
+                  : ImageConstants.imgConfirmSelection,
+              height: 138.r,
+              width: 138.r)
         ] else ...[
-          Image.asset(ImageConstants.imgVerifying, height: 138.r, width: 138.r)
+          Image.asset(AppUtils.isDarkTheme(context)
+              ? ImageConstants.imgVerifyingDark
+              : ImageConstants.imgVerifying, height: 138.r, width: 138.r)
         ],
         SizedBox(height: 12.h),
         SizedBox(
@@ -70,7 +79,7 @@ class _CommodityConfirmationPageState extends State<CommodityConfirmationPage> {
           child: Text(
             "$userName ${commodityStatus == CommodityStatus.confirm ? appText.we_just_want_to_confirm_your_selection : appText.we_are_verifying_your_account_information}",
             textAlign: TextAlign.center,
-            style: textWith24W500(ColorConstants.black1),
+            style: textWith24W500(Theme.of(context).focusColor),
           ),
         ),
         SizedBox(height: 12.h),
@@ -92,15 +101,17 @@ class _CommodityConfirmationPageState extends State<CommodityConfirmationPage> {
           ),
         ] else ...[
           Container(
-            decoration:
-                BoxDecoration(color: ColorConstants.yellow.withOpacity(0.1)),
+            decoration: BoxDecoration(
+                color: ColorConstants.yellow.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(15.r),
+                border: Border.all(width: 1.w, color: ColorConstants.yellow)),
             padding: EdgeInsets.all(6.r),
             child: Text(
               commodityStatus == CommodityStatus.pendingWithCustomerSupport
                   ? appText.hang_tight_the_verification_is_taking_longer
                   : appText.we_just_want_to_confirm_you_commodity_selection,
               textAlign: TextAlign.center,
-              style: textWith14W400(ColorConstants.black1),
+              style: textWith14W400(Theme.of(context).focusColor),
             ),
           ),
         ],
@@ -121,7 +132,7 @@ class _CommodityConfirmationPageState extends State<CommodityConfirmationPage> {
           children: [
             Text(
               appText.commodities,
-              style: textWith20W500(ColorConstants.black1),
+              style: textWith20W500(Theme.of(context).focusColor),
             ),
             if (commodityStatus == CommodityStatus.confirm) ...[
               InkWell(
@@ -132,7 +143,9 @@ class _CommodityConfirmationPageState extends State<CommodityConfirmationPage> {
                   height: 35.h,
                   width: 61.w,
                   decoration: BoxDecoration(
-                      color: ColorConstants.blue.withOpacity(0.1),
+                      color: AppUtils.isDarkTheme(context)
+                          ? ColorConstants.blackLight
+                          : ColorConstants.blue.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(100.r)),
                   child: Center(
                     child: Text(
@@ -149,7 +162,8 @@ class _CommodityConfirmationPageState extends State<CommodityConfirmationPage> {
         Container(
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15.r),
-              border: Border.all(color: ColorConstants.border, width: 1.h)),
+              border: Border.all(
+                  color: Theme.of(context).dividerColor, width: 1.h)),
           child: ListView.separated(
             padding: EdgeInsets.zero,
             shrinkWrap: true,
@@ -164,36 +178,37 @@ class _CommodityConfirmationPageState extends State<CommodityConfirmationPage> {
                   children: [
                     Text(
                       commodity,
-                      style: textWith18W500(ColorConstants.black1),
+                      style: textWith18W500(Theme.of(context).focusColor),
                     ),
+                    SizedBox(height: 5.h),
                     Wrap(
-                      spacing: 1.w,
-                      runSpacing: 2.h,
+                      spacing: 10.w,
+                      runSpacing: 21.h,
                       alignment: WrapAlignment.start,
                       crossAxisAlignment: WrapCrossAlignment.start,
                       runAlignment: WrapAlignment.start,
                       children:
                           combineMarketList(widget.selectedCommodityList[index])
                               .map((market) {
-                        return Container(
-                          padding: EdgeInsets.all(8.r),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                ImageConstants.imgUsaDummy,
-                                height: 12.r,
-                                width: 12.r,
-                              ),
-                              SizedBox(width: 3.w),
-                              Text(
-                                market.name,
-                                style: textWith12W500(ColorConstants.greyDark1),
-                              ),
-                            ],
-                          ),
+                        return Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              ImageConstants.imgUsaDummy,
+                              height: 12.r,
+                              width: 12.r,
+                            ),
+                            SizedBox(width: 5.w),
+                            Text(
+                              market.name,
+                              style: textWith12W500(
+                                  AppUtils.isDarkTheme(context)
+                                      ? ColorConstants.greyLight
+                                      : ColorConstants.greyDark1),
+                            ),
+                          ],
                         );
                       }).toList(),
                     )
@@ -202,7 +217,8 @@ class _CommodityConfirmationPageState extends State<CommodityConfirmationPage> {
               );
             },
             separatorBuilder: (context, index) {
-              return Divider(height: 1.h, color: ColorConstants.border);
+              return Divider(
+                  height: 1.h, color: Theme.of(context).dividerColor);
             },
           ),
         ),

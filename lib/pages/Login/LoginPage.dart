@@ -8,6 +8,8 @@ import 'package:acuro/components/Common/CommonTextStyle.dart';
 import 'package:acuro/components/Common/CountryCodePicker.dart';
 import 'package:acuro/components/Common/CustomTextField.dart';
 import 'package:acuro/core/constants/Constants.dart';
+import 'package:acuro/core/constants/EnvVariable.dart';
+import 'package:acuro/core/constants/ImageConstants.dart';
 import 'package:acuro/core/navigator/AppRouter.gr.dart';
 import 'package:acuro/core/theme/AppColors.dart';
 import 'package:acuro/core/utils/AppUtils.dart';
@@ -37,6 +39,9 @@ class _LoginPageState extends State<LoginPage>
   String countryName = 'India';
   String countryFlag = 'IN';
   bool hasError = false;
+
+  bool isPhonePasswordVisible = false;
+  bool isEmailConformPasswordVisible = false;
 
   @override
   void initState() {
@@ -70,7 +75,6 @@ class _LoginPageState extends State<LoginPage>
         AppUtils.closeTheKeyboard(context);
       },
       child: Scaffold(
-        backgroundColor: ColorConstants.white1,
         body: CommonBackgroundView(
           child: Padding(
             padding:
@@ -90,7 +94,7 @@ class _LoginPageState extends State<LoginPage>
                 Text(
                   appText.log_in,
                   textAlign: TextAlign.center,
-                  style: textWith24W500(ColorConstants.black1),
+                  style: textWith24W500(Theme.of(context).focusColor),
                 ),
                 SizedBox(height: 12.h),
             
@@ -154,6 +158,17 @@ class _LoginPageState extends State<LoginPage>
             controller: passwordController,
             hint: appText.password,
             keyboardType: TextInputType.text,
+            onTapOnIcon: () {
+              isPhonePasswordVisible = !isPhonePasswordVisible;
+              setState(() {});
+            },
+            isObscureText: !isPhonePasswordVisible ? true : false,
+            suffixIcon: !isPhonePasswordVisible
+                ? ImageConstants.icEyesClosed
+                : ImageConstants.icEyeOpened,
+            fontStyle: passwordController.text.trim().isNotEmpty && !isPhonePasswordVisible
+                ? textWith20W500(Theme.of(context).focusColor)
+                : textWith20W400(Theme.of(context).focusColor),
             onChanged: (p0) {
               setState(() {});
             },
@@ -192,10 +207,9 @@ class _LoginPageState extends State<LoginPage>
                   child: CustomTextField(
                 hint: appText.mobile_number,
                 controller: phoneController,
-                backgroundColor: ColorConstants.countryBackground,
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
-                inputFormatters: AppUtils.onlyDigitsFormatter(maxPhoneLength),
+                inputFormatters: AppUtils.onlyDigitsFormatter(max_number),
                 onChanged: (p0) {
                   setState(() {});
                 },
@@ -207,6 +221,17 @@ class _LoginPageState extends State<LoginPage>
             controller: mobilePasswordController,
             hint: appText.password,
             keyboardType: TextInputType.text,
+            onTapOnIcon: () {
+              isEmailConformPasswordVisible = !isEmailConformPasswordVisible;
+              setState(() {});
+            },
+            isObscureText: !isEmailConformPasswordVisible ? true : false,
+            suffixIcon: !isEmailConformPasswordVisible
+                ? ImageConstants.icEyesClosed
+                : ImageConstants.icEyeOpened,
+            fontStyle: mobilePasswordController.text.trim().isNotEmpty && !isEmailConformPasswordVisible
+                ? textWith20W500(Theme.of(context).focusColor)
+                : textWith20W400(Theme.of(context).focusColor),
             onChanged: (p0) {
               setState(() {});
             },

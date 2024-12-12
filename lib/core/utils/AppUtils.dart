@@ -11,9 +11,14 @@ class AppUtils {
     }
   }
 
+  static bool isDarkTheme(BuildContext context) {
+    return MediaQuery.of(context).platformBrightness == Brightness.dark;
+  }
+
   static bool isPasswordValid(String value) {
     if (value.isNotEmpty) {
-      return value.contains(RegExp(r'^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+{}|:"<>?~-]).{8,}$'));
+      return value.contains(RegExp(
+          r'^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+{}|:"<>?~-]).{8,}$'));
     } else {
       return false;
     }
@@ -26,12 +31,11 @@ class AppUtils {
     }
   }
 
-
   static List<TextInputFormatter> onlyDigitsFormatter(int? maxDigits) {
     return [
       FilteringTextInputFormatter.digitsOnly,
       FilteringTextInputFormatter.allow(RegExp(r'^[0-9]*$')),
-      if(maxDigits != 0)...[
+      if (maxDigits != 0) ...[
         LengthLimitingTextInputFormatter(maxDigits),
       ]
     ];
@@ -42,6 +46,4 @@ class AppUtils {
       FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z]*$')),
     ];
   }
-
-
 }

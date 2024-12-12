@@ -29,20 +29,20 @@ class _OtpViewState extends State<OtpView> {
       obscureText: false,
       animationType: AnimationType.fade,
       inputFormatters: AppUtils.onlyDigitsFormatter(0),
-      textStyle: textWith20W400(ColorConstants.black1),
+      textStyle: textWith20W400(Theme.of(context).focusColor),
       pinTheme: PinTheme(
-        inactiveFillColor: ColorConstants.otpInactiveColor,
+        inactiveFillColor: Theme.of(context).secondaryHeaderColor,
         inactiveColor: widget.hasError
             ? ColorConstants.red
-            : ColorConstants.otpInactiveColor,
+            : Theme.of(context).secondaryHeaderColor,
         activeColor: widget.hasError
             ? ColorConstants.red
-            : ColorConstants.otpInactiveColor,
-        activeFillColor: ColorConstants.otpInactiveColor,
+            : Theme.of(context).secondaryHeaderColor,
+        activeFillColor: Theme.of(context).secondaryHeaderColor,
         selectedColor: widget.hasError
             ? ColorConstants.red
-            : ColorConstants.otpInactiveColor,
-        selectedFillColor: ColorConstants.otpInactiveColor,
+            : Theme.of(context).secondaryHeaderColor,
+        selectedFillColor: Theme.of(context).secondaryHeaderColor,
         shape: PinCodeFieldShape.box,
         errorBorderColor: ColorConstants.red,
         errorBorderWidth: 1,

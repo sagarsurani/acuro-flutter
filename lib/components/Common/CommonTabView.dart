@@ -35,7 +35,7 @@ class _CommonTabHeaderViewState extends State<CommonTabHeaderView> {
     return Container(
         padding: EdgeInsets.all(4.r),
         decoration: BoxDecoration(
-            color: ColorConstants.lightBlue,
+            color: Theme.of(context).tabBarTheme.unselectedLabelColor,
             borderRadius: BorderRadius.circular(100.r)),
         child: TabBar(
             controller: widget.controller,
@@ -67,14 +67,16 @@ class _CommonTabHeaderViewState extends State<CommonTabHeaderView> {
       alignment: Alignment.center,
       padding: EdgeInsets.symmetric(vertical: 4.h),
       decoration: BoxDecoration(
-          color: isSelected ? ColorConstants.white1 : Colors.transparent,
+          color: isSelected
+              ? Theme.of(context).tabBarTheme.indicatorColor
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(100.r)),
       child: Text(
         text,
         style: isSelected
             ? (widget.selectedTextStyle != null)
                 ? widget.selectedTextStyle
-                : textWith14W500(ColorConstants.black1)
+                : textWith14W500(Theme.of(context).focusColor)
             : (widget.textStyle != null)
                 ? widget.textStyle
                 : textWith14W500(ColorConstants.grey2),

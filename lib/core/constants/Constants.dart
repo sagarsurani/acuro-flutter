@@ -7,9 +7,9 @@ typedef Json = Map<String, dynamic>;
 const ACURO = "Acuro";
 const AEONIK = "Aeonik";
 
-const int maxPhoneLength = 10;
-
 enum RoleSelectionEnum { selected, unSelected, comingSoon }
+
+enum OTPEnum { phone, email, forgotPassword }
 
 enum CommodityStatus { confirm, pending, pendingWithCustomerSupport }
 
@@ -19,6 +19,11 @@ List<RoleSelectionModel> roleSelectionListStatic = [
       roleDescription:
           "Buy commodities at optimal prices for your organization's needs",
       roleSelectionEnum: RoleSelectionEnum.selected),
+  RoleSelectionModel(
+      roleName: "Seller",
+      roleDescription:
+      "Sell commodities at optimal prices for your organization's needs",
+      roleSelectionEnum: RoleSelectionEnum.comingSoon),
   RoleSelectionModel(
       roleName: "Trader",
       roleDescription:
@@ -42,18 +47,33 @@ List<CommodityModel> commodityListStatic = [
   CommodityModel(
       name: "Crude Palm Oil",
       isOpened: false,
-      spotMarket: [],
-      futureMarket: []),
+      spotMarket: [
+        MarketModel(name: "FOB Black Sea 4",isSelected: false,flag: ""),
+      ],
+      futureMarket: [
+        MarketModel(name: "Black Sea 1",isSelected: false,flag: ""),
+      ]
+  ),
   CommodityModel(
       name: "Soybean Oil",
       isOpened: false,
-      spotMarket: [],
-      futureMarket: []),
+      spotMarket: [
+        MarketModel(name: "FOB Black Sea",isSelected: false,flag: ""),
+      ],
+      futureMarket: [
+        MarketModel(name: "FOB Black 1",isSelected: false,flag: ""),
+      ]
+  ),
   CommodityModel(
       name: "Rapeseed Oil",
       isOpened: false,
-      spotMarket: [],
-      futureMarket: []),
+      spotMarket: [
+        MarketModel(name: "FOB Black Sea 3",isSelected: false,flag: ""),
+      ],
+      futureMarket: [
+        MarketModel(name: "FOB Black Sea 12",isSelected: false,flag: ""),
+      ]
+  ),
 ];
 
 
@@ -63,3 +83,5 @@ List<CommodityCategoryModel> commodityCategoryListStatic = [
   CommodityCategoryModel(name: "Metals", isSelected: false),
   CommodityCategoryModel(name: "Chemicals", isSelected: false),
 ];
+
+
