@@ -79,8 +79,7 @@ class _ForgotOtpPageState extends State<ForgotOtpPage> {
   }
 
   void navigateToResetPasswordRoute() {
-    context.router.pushAndPopUntil(const ResetPasswordRoute(),
-        predicate: (route) => false);
+    context.router.replace(const ResetPasswordRoute());
   }
 
   @override
@@ -178,7 +177,7 @@ class _ForgotOtpPageState extends State<ForgotOtpPage> {
           )
         : Text(
             "${appText.resend_code_in}${TimeUtils.otpTime(timeLeft)}",
-            style: textWith16W400(ColorConstants.black1),
+            style: textWith16W400(Theme.of(context).focusColor),
           );
   }
 }
