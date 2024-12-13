@@ -31,11 +31,11 @@ class CountryCodePicker extends StatelessWidget {
           countryListTheme: CountryListThemeData(
             bottomSheetHeight: MediaQuery.of(context).size.height * 0.75,
             backgroundColor: Theme.of(context).secondaryHeaderColor,
-            searchTextStyle: const TextStyle(
-              color: ColorConstants.blue,
+            searchTextStyle: TextStyle(
+              color: Theme.of(context).focusColor,
             ),
-            textStyle: const TextStyle(
-              color: ColorConstants.blue,
+            textStyle: TextStyle(
+              color: Theme.of(context).focusColor,
             ),
           ),
         );

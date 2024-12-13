@@ -26,12 +26,6 @@ class TakeUserDetailsPage extends StatefulWidget {
 class _TakeUserDetailsPageState extends State<TakeUserDetailsPage> {
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
-  final passwordController = TextEditingController();
-  final confirmPasswordController = TextEditingController();
-  bool isPasswordVisible = false;
-  bool isConformPasswordVisible = false;
-  final pageController = PageController();
-  int currentIndex = 0;
   bool hasError = false;
   List<String> errorsText = [];
 
@@ -53,26 +47,13 @@ class _TakeUserDetailsPageState extends State<TakeUserDetailsPage> {
         lastNameController.text.trim().isNotEmpty;
   }
 
-  bool isPasswordValid() {
-    return AppUtils.isPasswordValid(passwordController.text.trim());
-  }
-
-  bool isBothPasswordMatched() {
-    return passwordController.text.trim().isNotEmpty &&
-        confirmPasswordController.text.trim().isNotEmpty &&
-        AppUtils.isPasswordValid(passwordController.text.trim()) &&
-        passwordController.text.trim() == confirmPasswordController.text.trim();
-  }
-
   void tapOnUserDetailsSubmit() {
     var appText = AppLocalizations.of(context)!;
     if (checkUserDetailsValidation()) {
       if (isNameValid()) {
         hasError = false;
         AppUtils.closeTheKeyboard(context);
-        pageController.nextPage(
-            duration: const Duration(milliseconds: 100),
-            curve: Curves.easeInOut);
+        context.router.push(const CreatePasswordRoute());
       } else {
         hasError = true;
         errorsText = [
@@ -98,47 +79,11 @@ class _TakeUserDetailsPageState extends State<TakeUserDetailsPage> {
     setState(() {});
   }
 
-  void checkPasswordChangedValidation(String text) {
-    var appText = AppLocalizations.of(context)!;
-    if (text.isNotEmpty && !AppUtils.isPasswordValid(text)) {
-      hasError = true;
-      errorsText = [
-        appText.minimum_length_should_be_eight,
-        appText.contains_at_least_one_number,
-        appText.contains_at_least_one_special_character,
-        appText.contains_at_least_one_uppercase_letter
-      ];
-    } else if (confirmPasswordController.text.trim().isNotEmpty &&
-        !isBothPasswordMatched()) {
-      hasError = true;
-      errorsText = [
-        appText.password_not_matched,
-      ];
-    } else {
-      hasError = false;
-    }
-    setState(() {});
-  }
-
-  void tapOnSubmitPassword() {
-    if (isBothPasswordMatched()) {
-      context.router.push(const SelectRoleRoute());
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     var appText = AppLocalizations.of(context)!;
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
-        pageController.previousPage(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut);
-        currentIndex = pageController.page?.toInt() ?? 0;
-        hasError = false;
-        setState(() {});
-      },
       child: GestureDetector(
         onTap: () {
           AppUtils.closeTheKeyboard(context);
@@ -146,45 +91,29 @@ class _TakeUserDetailsPageState extends State<TakeUserDetailsPage> {
         child: Scaffold(
           backgroundColor: ColorConstants.white1,
           body: CommonBackgroundView(
-            child: Padding(
-              padding: EdgeInsets.only(
-                  top: currentIndex == 0 ? 90.h : 60.h,
-                  bottom: 24.h,
-                  left: 20.w,
-                  right: 20.w),
-              child: SmoothView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // back view
-                    if (currentIndex != 0)
-                      CommonBackView(
-                        onTap: () {
-                          pageController.previousPage(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut);
-                          setState(() {});
-                        },
-                      ),
-                    SizedBox(height: 14.h),
-                    // content view
-                    Expanded(
-                      child: PageView(
-                        controller: pageController,
-                        physics: const NeverScrollableScrollPhysics(),
-                        onPageChanged: (value) {
-                          currentIndex = value;
-                          setState(() {});
-                        },
-                        children: [
-                          firstAndLastNameView(appText),
-                          setYourPasswordView(appText),
-                        ],
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                            top: 90.h, bottom: 24.h, left: 20.w, right: 20.w),
+                        child: firstAndLastNameView(appText),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  // submit details button
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                        vertical: 24.h, horizontal: 20.w),
+                    child: CommonButton(
+                        onTap: tapOnUserDetailsSubmit,
+                        isEnable: isNameValid(),
+                        buttonText: appText.continueText),
+                  )
+                ],
               ),
             ),
           ),
@@ -194,154 +123,71 @@ class _TakeUserDetailsPageState extends State<TakeUserDetailsPage> {
   }
 
   Widget firstAndLastNameView(AppLocalizations appText) {
-    return SmoothView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: 14.h),
-          CommonAuthHeader(
-              headerText: appText.whats_your_name,
-              bodyText: appText.enter_your_first_and_last_name),
-          SizedBox(height: 32.h),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: 14.h),
+        CommonAuthHeader(
+            headerText: appText.whats_your_name,
+            bodyText: appText.enter_your_first_and_last_name),
+        SizedBox(height: 32.h),
 
-          // name text field
-          CustomTextField(
-            controller: firstNameController,
-            hint: appText.first_name,
-            keyboardType: TextInputType.name,
-            hasError: !isNameContainsOnlyCharacters(firstNameController.text)
-                ? hasError
-                : null,
-            onChanged: (p0) {
-              checkNameChangedValidation(firstNameController.text);
-            },
-          ),
-          SizedBox(height: 10.h),
-          CustomTextField(
-            controller: lastNameController,
-            hint: appText.last_name,
-            hasError: !isNameContainsOnlyCharacters(lastNameController.text)
-                ? hasError
-                : null,
-            keyboardType: TextInputType.name,
-            onChanged: (p0) {
-              checkNameChangedValidation(lastNameController.text);
-            },
-          ),
-          SizedBox(height: 12.h),
+        // name text field
+        CustomTextField(
+          controller: firstNameController,
+          hint: appText.first_name,
+          keyboardType: TextInputType.name,
+          hasError: !isNameContainsOnlyCharacters(firstNameController.text)
+              ? hasError
+              : null,
+          onChanged: (p0) {
+            checkNameChangedValidation(firstNameController.text);
+          },
+        ),
+        SizedBox(height: 10.h),
+        CustomTextField(
+          controller: lastNameController,
+          hint: appText.last_name,
+          hasError: !isNameContainsOnlyCharacters(lastNameController.text)
+              ? hasError
+              : null,
+          keyboardType: TextInputType.name,
+          onChanged: (p0) {
+            checkNameChangedValidation(lastNameController.text);
+          },
+        ),
+        SizedBox(height: 12.h),
 
-          // error view
-          errorView(appText),
-          if (!hasError) const Spacer(),
+        // error view
+        errorView(appText),
 
-          // submit details button
-          CommonButton(
-              onTap: tapOnUserDetailsSubmit,
-              isEnable: isNameValid(),
-              buttonText: appText.continueText)
-        ],
-      ),
-    );
-  }
-
-  Widget setYourPasswordView(AppLocalizations appText) {
-    return SmoothView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: 14.h),
-          CommonAuthHeader(
-              headerText: appText.create_password,
-              bodyText: appText.please_set_your_password_and_confirm_password),
-          SizedBox(height: 32.h),
-          // create password text field
-          CustomTextField(
-            controller: passwordController,
-            hint: appText.enter_password,
-            keyboardType: TextInputType.name,
-            isPng: false,
-            onTapOnIcon: () {
-              isPasswordVisible = !isPasswordVisible;
-              setState(() {});
-            },
-            isObscureText: !isPasswordVisible ? true : false,
-            suffixIcon: !isPasswordVisible
-                ? ImageConstants.icEyesClosed
-                : ImageConstants.icEyeOpened,
-            fontStyle:
-            passwordController.text.trim().isNotEmpty && !isPasswordVisible
-                ? textWith20W500(Theme.of(context).focusColor)
-                : textWith20W400(Theme.of(context).focusColor),
-            onChanged: (p0) {
-              checkPasswordChangedValidation(passwordController.text);
-            },
-          ),
-          SizedBox(height: 10.h),
-          CustomTextField(
-            controller: confirmPasswordController,
-            hint: appText.enter_confirm_password,
-            keyboardType: TextInputType.name,
-            isPng: false,
-            onTapOnIcon: () {
-              isConformPasswordVisible = !isConformPasswordVisible;
-              setState(() {});
-            },
-            isObscureText: !isConformPasswordVisible ? true : false,
-            suffixIcon: !isConformPasswordVisible
-                ? ImageConstants.icEyesClosed
-                : ImageConstants.icEyeOpened,
-            fontStyle: confirmPasswordController.text.trim().isNotEmpty &&
-                !isConformPasswordVisible
-                ? textWith20W500(Theme.of(context).focusColor)
-                : textWith20W400(Theme.of(context).focusColor),
-            onChanged: (p0) {
-              checkPasswordChangedValidation(confirmPasswordController.text);
-            },
-          ),
-          SizedBox(height: 12.h),
-          // error view
-          errorView(appText),
-          if (!hasError) const Spacer(),
-          // submit button
-          CommonButton(
-              onTap: tapOnSubmitPassword,
-              isEnable: isBothPasswordMatched(),
-              buttonText: appText.continueText)
-        ],
-      ),
+      ],
     );
   }
 
   Widget errorView(AppLocalizations appText) {
     return hasError
-        ? Expanded(
-          child: ListView.separated(
-            separatorBuilder: (context, index) {
-              return SizedBox(height: 10.h);
-            },
-            padding: EdgeInsets.zero,
-            shrinkWrap: true,
-            itemCount: errorsText.length,
-            itemBuilder: (context, index) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(ImageConstants.icRedClose),
-                  SizedBox(
-                    width: 2.w,
-                  ),
-                  Text(
-                    errorsText[index],
-                    style: textWith14W400(ColorConstants.red),
-                  ),
-                ],
-              );
-            },
+        ? Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: errorsText.map((error) {
+        return Padding(
+          padding: EdgeInsets.only(bottom: 10.h),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SvgPicture.asset(ImageConstants.icRedClose),
+              SizedBox(width: 2.w),
+              Text(
+                error,
+                style: textWith14W400(ColorConstants.red),
+              ),
+            ],
           ),
-        )
+        );
+      }).toList(),
+    )
         : const SizedBox.shrink();
   }
 }
