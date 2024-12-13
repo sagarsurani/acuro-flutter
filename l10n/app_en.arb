@@ -66,6 +66,15 @@
   "mobile_number_should_be_10_digits" : "Mobile number should be 10 digits",
   "hang_tight_this_usually_takes_between_5_minutes" : "Hang tight! This usually takes between 5 minutes to an hour, but can take up to 5 hours. Please check back later.",
   "we_are_verifying_your_account_information" : "we are verifying your account information",
-  "hang_tight_the_verification_is_taking_longer" : "Hang tight! The verification is taking longer than expected. You can wait or contact our support"
+  "hang_tight_the_verification_is_taking_longer" : "Hang tight! The verification is taking longer than expected. You can wait or contact our support",
+  "somethings_went_wrong": "Something went wrong. Please try again.",
+  "please_enter_valid_code": "Please enter valid code.",
+  "passwords_do_not_match_or_user_not_found": "Passwords do not match or user not found.",
+  "invalid_email": "Invalid E-Mail",
+  "please_enter_valid_email_address_password": "Please enter a valid email address and password",
+  "too_many_requests": "Too many requests.",
+  "there_already_account_same_email": "There is already an account with the same email address but different login details.",
+  "the_login_details_entered_invalid_have_expired": "The login details you entered are invalid or have expired.",
+  "invalid_email_address": "Invalid email address."
 
 }

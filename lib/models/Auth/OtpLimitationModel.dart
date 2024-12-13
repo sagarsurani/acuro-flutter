@@ -8,7 +8,7 @@ part 'OtpLimitationModel.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class OTPLimitationModel extends Equatable {
-  OTPEnum otpFrom;
+  String otpFrom;
   String emailOrPhoneName;
   int limit;
   String time;

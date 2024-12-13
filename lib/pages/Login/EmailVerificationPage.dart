@@ -7,6 +7,7 @@ import 'package:acuro/components/Common/CustomTextField.dart';
 import 'package:acuro/components/Login/CommonAuthHeader.dart';
 import 'package:acuro/components/Login/OTPView.dart';
 import 'package:acuro/core/navigator/AppRouter.gr.dart';
+import 'package:acuro/core/persistence/PreferenceHelper.dart';
 import 'package:acuro/core/theme/AppColors.dart';
 import 'package:acuro/core/utils/AppUtils.dart';
 import 'package:acuro/core/utils/TimeUtils.dart';
@@ -81,7 +82,12 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
       });
     } else if (!hasError && otpController.text == "123456") {
       context.router.push(const TakeUserDetailsRoute());
+      setUserEmail();
     }
+  }
+
+  Future<void> setUserEmail() async {
+    await PreferenceHelper.setUserEmail(emailController.text.trim());
   }
 
   @override

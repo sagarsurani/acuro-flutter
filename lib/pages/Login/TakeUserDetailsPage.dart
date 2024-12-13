@@ -53,7 +53,9 @@ class _TakeUserDetailsPageState extends State<TakeUserDetailsPage> {
       if (isNameValid()) {
         hasError = false;
         AppUtils.closeTheKeyboard(context);
-        context.router.push(const CreatePasswordRoute());
+        context.router.push(CreatePasswordRoute(
+            firstName: firstNameController.text.trim(),
+            lastName: lastNameController.text.trim()));
       } else {
         hasError = true;
         errorsText = [
@@ -106,8 +108,8 @@ class _TakeUserDetailsPageState extends State<TakeUserDetailsPage> {
                   ),
                   // submit details button
                   Padding(
-                    padding: EdgeInsets.symmetric(
-                        vertical: 24.h, horizontal: 20.w),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 24.h, horizontal: 20.w),
                     child: CommonButton(
                         onTap: tapOnUserDetailsSubmit,
                         isEnable: isNameValid(),
@@ -161,7 +163,6 @@ class _TakeUserDetailsPageState extends State<TakeUserDetailsPage> {
 
         // error view
         errorView(appText),
-
       ],
     );
   }
@@ -169,25 +170,25 @@ class _TakeUserDetailsPageState extends State<TakeUserDetailsPage> {
   Widget errorView(AppLocalizations appText) {
     return hasError
         ? Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: errorsText.map((error) {
-        return Padding(
-          padding: EdgeInsets.only(bottom: 10.h),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SvgPicture.asset(ImageConstants.icRedClose),
-              SizedBox(width: 2.w),
-              Text(
-                error,
-                style: textWith14W400(ColorConstants.red),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
-    )
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: errorsText.map((error) {
+              return Padding(
+                padding: EdgeInsets.only(bottom: 10.h),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset(ImageConstants.icRedClose),
+                    SizedBox(width: 2.w),
+                    Text(
+                      error,
+                      style: textWith14W400(ColorConstants.red),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          )
         : const SizedBox.shrink();
   }
 }

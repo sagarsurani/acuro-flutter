@@ -1,38 +1,69 @@
-
-import 'package:acuro/core/theme/AppColors.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:toastification/toastification.dart';
-import '../../components/Common/CommonTextStyle.dart';
+import 'package:acuro/core/constants/GlobalConstant.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ToastUtils {
-
-  static void showToaster(String message, BuildContext context) {
-    toastFun(context,message);
+  static void showToaster(String message) {
+    Fluttertoast.showToast(msg: message);
   }
 
-  static void toastFun(BuildContext context,String messageText) {
-    toastification.show(
-      context: context,
-      type: ToastificationType.error,
-      style: ToastificationStyle.minimal,
-      animationDuration: const Duration(milliseconds: 100),
-      autoCloseDuration: const Duration(seconds: 3),
-      alignment: Alignment.bottomLeft,
-      direction: TextDirection.ltr,
-      primaryColor: ColorConstants.red,
-      backgroundColor: ColorConstants.white1,
-      borderRadius: BorderRadius.circular(12.r),
-      showProgressBar: true,
-      closeButtonShowType: CloseButtonShowType.none,
-      progressBarTheme: const ProgressIndicatorThemeData(
-          circularTrackColor: Colors.transparent,
-          linearMinHeight: 0,
-          linearTrackColor: Colors.transparent),
-      description: Text(messageText, style: textWith14W500(ColorConstants.red)),
-      icon: Container(),
-      closeOnClick: false,
-      dragToClose: true,
-    );
+  static void showAuthToaster(String message) {
+    String messageText = "";
+    AppLocalizations appText =
+        AppLocalizations.of(GlobalConstant.currentPageContext)!;
+    if (message.contains("Exception:")) {
+      message = message.replaceAll("Exception:", "");
+    }
+    if (message == "invalid-email") {
+      messageText = appText.invalid_email;
+    } else if (message == "invalid-credential") {
+      messageText = appText.please_enter_valid_email_address_password;
+    } else if (message == "too-many-requests") {
+      messageText = appText.too_many_requests;
+    } else if (message == "account-exists-with-different-credential") {
+      messageText = appText.there_already_account_same_email;
+    } else if (message ==
+        "The supplied auth credential is incorrect, malformed or has expired.") {
+      messageText = appText.please_enter_valid_email_address_password;
+    } else if (message.contains("[firebase_auth/invalid-email]")) {
+      messageText = appText.invalid_email_address;
+    } else if (message == "invalid_login_credentials" ||
+        message == "INVALID_LOGIN_CREDENTIALS") {
+      messageText = appText.please_enter_valid_email_address_password;
+    } else {
+      messageText = appText.somethings_went_wrong;
+    }
+    Fluttertoast.showToast(msg: message);
+  }
+
+  static String getAuthMessage(String message) {
+    AppLocalizations appText =
+    AppLocalizations.of(GlobalConstant.currentPageContext)!;
+
+    if (message.contains("Exception:")) {
+      message = message.replaceAll("Exception:", "").trim();
+    }
+
+    switch (message) {
+      case "invalid-email":
+        return appText.invalid_email;
+      case "invalid-credential":
+      case "The supplied auth credential is incorrect, malformed or has expired.":
+      case "invalid_login_credentials":
+      case "INVALID_LOGIN_CREDENTIALS":
+        return appText.please_enter_valid_email_address_password;
+      case "too-many-requests":
+        return appText.too_many_requests;
+      case "account-exists-with-different-credential":
+        return appText.there_already_account_same_email;
+      default:
+        if (message.contains("[firebase_auth/invalid-email]")) {
+          return appText.invalid_email_address;
+        }
+        return appText.somethings_went_wrong;
+    }
   }
 }
+
+

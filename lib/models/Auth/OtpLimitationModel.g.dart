@@ -8,7 +8,7 @@ part of 'OtpLimitationModel.dart';
 
 OTPLimitationModel _$OTPLimitationModelFromJson(Map<String, dynamic> json) =>
     OTPLimitationModel(
-      otpFrom: $enumDecode(_$OTPEnumEnumMap, json['otpFrom']),
+      otpFrom: json['otpFrom'] as String,
       emailOrPhoneName: json['emailOrPhoneName'] as String,
       limit: (json['limit'] as num).toInt(),
       time: json['time'] as String,
@@ -16,14 +16,8 @@ OTPLimitationModel _$OTPLimitationModelFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$OTPLimitationModelToJson(OTPLimitationModel instance) =>
     <String, dynamic>{
-      'otpFrom': _$OTPEnumEnumMap[instance.otpFrom]!,
+      'otpFrom': instance.otpFrom,
       'emailOrPhoneName': instance.emailOrPhoneName,
       'limit': instance.limit,
       'time': instance.time,
     };
-
-const _$OTPEnumEnumMap = {
-  OTPEnum.phone: 'phone',
-  OTPEnum.email: 'email',
-  OTPEnum.forgotPassword: 'forgotPassword',
-};

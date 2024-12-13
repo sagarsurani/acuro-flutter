@@ -75,10 +75,19 @@ class CommodityConfirmationRouteArgs {
 
 /// generated route for
 /// [_i2.CreatePasswordPage]
-class CreatePasswordRoute extends _i15.PageRouteInfo<void> {
-  const CreatePasswordRoute({List<_i15.PageRouteInfo>? children})
-      : super(
+class CreatePasswordRoute extends _i15.PageRouteInfo<CreatePasswordRouteArgs> {
+  CreatePasswordRoute({
+    _i16.Key? key,
+    required String firstName,
+    required String lastName,
+    List<_i15.PageRouteInfo>? children,
+  }) : super(
           CreatePasswordRoute.name,
+          args: CreatePasswordRouteArgs(
+            key: key,
+            firstName: firstName,
+            lastName: lastName,
+          ),
           initialChildren: children,
         );
 
@@ -87,9 +96,33 @@ class CreatePasswordRoute extends _i15.PageRouteInfo<void> {
   static _i15.PageInfo page = _i15.PageInfo(
     name,
     builder: (data) {
-      return const _i2.CreatePasswordPage();
+      final args = data.argsAs<CreatePasswordRouteArgs>();
+      return _i2.CreatePasswordPage(
+        key: args.key,
+        firstName: args.firstName,
+        lastName: args.lastName,
+      );
     },
   );
+}
+
+class CreatePasswordRouteArgs {
+  const CreatePasswordRouteArgs({
+    this.key,
+    required this.firstName,
+    required this.lastName,
+  });
+
+  final _i16.Key? key;
+
+  final String firstName;
+
+  final String lastName;
+
+  @override
+  String toString() {
+    return 'CreatePasswordRouteArgs{key: $key, firstName: $firstName, lastName: $lastName}';
+  }
 }
 
 /// generated route for
@@ -118,6 +151,7 @@ class ForgotOtpRoute extends _i15.PageRouteInfo<ForgotOtpRouteArgs> {
     _i16.Key? key,
     required bool isEmail,
     required String detailsValue,
+    required String verificationId,
     List<_i15.PageRouteInfo>? children,
   }) : super(
           ForgotOtpRoute.name,
@@ -125,6 +159,7 @@ class ForgotOtpRoute extends _i15.PageRouteInfo<ForgotOtpRouteArgs> {
             key: key,
             isEmail: isEmail,
             detailsValue: detailsValue,
+            verificationId: verificationId,
           ),
           initialChildren: children,
         );
@@ -139,6 +174,7 @@ class ForgotOtpRoute extends _i15.PageRouteInfo<ForgotOtpRouteArgs> {
         key: args.key,
         isEmail: args.isEmail,
         detailsValue: args.detailsValue,
+        verificationId: args.verificationId,
       );
     },
   );
@@ -149,6 +185,7 @@ class ForgotOtpRouteArgs {
     this.key,
     required this.isEmail,
     required this.detailsValue,
+    required this.verificationId,
   });
 
   final _i16.Key? key;
@@ -157,9 +194,11 @@ class ForgotOtpRouteArgs {
 
   final String detailsValue;
 
+  final String verificationId;
+
   @override
   String toString() {
-    return 'ForgotOtpRouteArgs{key: $key, isEmail: $isEmail, detailsValue: $detailsValue}';
+    return 'ForgotOtpRouteArgs{key: $key, isEmail: $isEmail, detailsValue: $detailsValue, verificationId: $verificationId}';
   }
 }
 
@@ -226,12 +265,14 @@ class OtpVerifyRoute extends _i15.PageRouteInfo<OtpVerifyRouteArgs> {
   OtpVerifyRoute({
     _i16.Key? key,
     required String phoneNumber,
+    required String verificationId,
     List<_i15.PageRouteInfo>? children,
   }) : super(
           OtpVerifyRoute.name,
           args: OtpVerifyRouteArgs(
             key: key,
             phoneNumber: phoneNumber,
+            verificationId: verificationId,
           ),
           initialChildren: children,
         );
@@ -245,6 +286,7 @@ class OtpVerifyRoute extends _i15.PageRouteInfo<OtpVerifyRouteArgs> {
       return _i8.OtpVerifyPage(
         key: args.key,
         phoneNumber: args.phoneNumber,
+        verificationId: args.verificationId,
       );
     },
   );
@@ -254,15 +296,18 @@ class OtpVerifyRouteArgs {
   const OtpVerifyRouteArgs({
     this.key,
     required this.phoneNumber,
+    required this.verificationId,
   });
 
   final _i16.Key? key;
 
   final String phoneNumber;
 
+  final String verificationId;
+
   @override
   String toString() {
-    return 'OtpVerifyRouteArgs{key: $key, phoneNumber: $phoneNumber}';
+    return 'OtpVerifyRouteArgs{key: $key, phoneNumber: $phoneNumber, verificationId: $verificationId}';
   }
 }
 

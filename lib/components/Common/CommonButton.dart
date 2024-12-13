@@ -71,7 +71,7 @@ class _CommonButtonState extends State<CommonButton> {
   Widget loaderView() {
     return SpinKitThreeBounce(
       color: widget.loaderColor ?? Colors.white,
-      size: widget.loaderSize ?? 24.r,
+      size: widget.loaderSize ?? 20.r,
     );
   }
 

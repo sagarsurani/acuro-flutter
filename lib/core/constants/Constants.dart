@@ -13,6 +13,17 @@ enum OTPEnum { phone, email, forgotPassword }
 
 enum CommodityStatus { confirm, pending, pendingWithCustomerSupport }
 
+enum LoginType { signInWithEmail, signInWithPhone }
+
+//
+
+const PHONEAUTH = "phone";
+const EMAILAUTH = "email";
+const FORGOTPHONE = "forgotphone";
+const FORGOTEMAIL = "forgotmail";
+const SOMETHING_WANT_WRONG = "Somethings want wrong";
+const NUMBER_NOT_REGISTER = "Number not registered";
+
 List<RoleSelectionModel> roleSelectionListStatic = [
   RoleSelectionModel(
       roleName: "Buyer",
