@@ -71,10 +71,12 @@
   "please_enter_valid_code": "Please enter valid code.",
   "passwords_do_not_match_or_user_not_found": "Passwords do not match or user not found.",
   "invalid_email": "Invalid E-Mail",
-  "please_enter_valid_email_address_password": "Please enter a valid email address and password",
+  "please_enter_valid_email_address_password": "Please enter a valid email/phone and password",
   "too_many_requests": "Too many requests.",
   "there_already_account_same_email": "There is already an account with the same email address but different login details.",
   "the_login_details_entered_invalid_have_expired": "The login details you entered are invalid or have expired.",
-  "invalid_email_address": "Invalid email address."
+  "invalid_email_address": "Invalid email address.",
+  "exceed_the_attempts_try_again_after_eight_hour": "Exceed the attempts. Try again after 8 hours",
+  "welcome_to_acuro": "Welcome To Acuro"
 
 }

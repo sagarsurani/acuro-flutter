@@ -15,6 +15,8 @@ class AuthLoading extends AuthState {}
 
 class AuthVerifyLoading extends AuthState {}
 
+class LoginAuthLoading extends AuthState {}
+
 class AuthOtpSent extends AuthState {
   final String verificationId;
 
@@ -31,6 +33,18 @@ class AuthVerified extends AuthState {
   final UserCredential? userCredential;
 
   const AuthVerified({this.userCredential});
+}
+
+class AuthVerifyError extends AuthState {
+  final String errorMessage;
+
+  const AuthVerifyError({required this.errorMessage});
+}
+
+class LoginAuthError extends AuthState {
+  final String errorMessage;
+
+  const LoginAuthError({required this.errorMessage});
 }
 
 class AuthError extends AuthState {
@@ -51,3 +65,10 @@ class LoginAuthDone extends AuthState {
   const LoginAuthDone({this.userCredential});
 }
 
+class OtpValidationDone extends AuthState {
+  final int otpValidation;
+
+  const OtpValidationDone({required this.otpValidation});
+}
+
+class SetOtpValidationDone extends AuthState {}

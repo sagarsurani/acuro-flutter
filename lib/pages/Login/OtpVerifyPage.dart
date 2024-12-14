@@ -41,13 +41,14 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
   String errorText = '';
   bool canResend = false;
   String verificationId = "";
-  int timeLeft = 30;
+  int timeLeft = 60;
+  int resendOtpValidation = 0;
   Timer? _timer;
 
   @override
   void initState() {
-    startResendTimer();
     verificationId = widget.verificationId;
+    startResendTimer();
     super.initState();
   }
 
@@ -57,14 +58,15 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
   }
 
   void callApiForResendOtp() {
-    getIt<AuthBloc>().add(ResendOtpEvent(phoneNumber: widget.phoneNumber));
+    getIt<AuthBloc>().add(
+        ResendOtpEvent(phoneNumber: widget.phoneNumber, isFromForgot: false));
   }
 
   void startResendTimer() {
     _timer?.cancel();
     setState(() {
       canResend = false;
-      timeLeft = 30;
+      timeLeft = 60;
     });
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -101,10 +103,15 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
       if (state is AuthVerifyLoading) {
         isLoading = true;
       }
-      if (state is AuthError) {
+      if (state is AuthVerifyError) {
         isLoading = false;
-        hasError = true;
-        errorText = appText.code_you_have_entered_not_matched;
+        if (!state.errorMessage.contains(BLOCKED)) {
+          hasError = true;
+          errorText = appText.code_you_have_entered_not_matched;
+        } else if (state.errorMessage == SO_MANY_ATTEMPT) {
+          _timer?.cancel();
+          canResend = resendOtpValidation > 5;
+        }
       }
       if (state is ResendOtpSend) {
         isLoading = false;
@@ -189,19 +196,34 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
   }
 
   Widget resendText(AppLocalizations appText) {
-    return canResend
-        ? InkWell(
-            onTap: () {
-              resendCode();
-            },
+    return resendOtpValidation > 5
+        ? Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 5.w),
+            decoration: BoxDecoration(
+              color: ColorConstants.red.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(15.r),
+              border: Border.all(width: 1.w, color: ColorConstants.red),
+            ),
             child: Text(
-              appText.resend_code,
-              style: textWith16W500(ColorConstants.blue),
+              appText.exceed_the_attempts_try_again_after_eight_hour,
+              textAlign: TextAlign.center,
+              style: textWith14W500(Theme.of(context).focusColor),
             ),
           )
-        : Text(
-            "${appText.resend_code_in}${TimeUtils.otpTime(timeLeft)}",
-            style: textWith16W400(Theme.of(context).focusColor),
-          );
+        : canResend
+            ? InkWell(
+                onTap: () {
+                  resendCode();
+                },
+                child: Text(
+                  appText.resend_code,
+                  style: textWith16W500(ColorConstants.blue),
+                ),
+              )
+            : Text(
+                "${appText.resend_code_in}${TimeUtils.otpTime(timeLeft)}",
+                style: textWith16W400(Theme.of(context).focusColor),
+              );
   }
 }

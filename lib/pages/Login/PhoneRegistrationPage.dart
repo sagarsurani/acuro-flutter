@@ -9,6 +9,7 @@ import 'package:acuro/components/Common/CommonTextStyle.dart';
 import 'package:acuro/components/Common/CountryCodePicker.dart';
 import 'package:acuro/components/Common/CustomTextField.dart';
 import 'package:acuro/components/Login/CommonAuthHeader.dart';
+import 'package:acuro/core/constants/Constants.dart';
 import 'package:acuro/core/constants/EnvVariable.dart';
 import 'package:acuro/core/di/Injectable.dart';
 import 'package:acuro/core/navigator/AppRouter.gr.dart';
@@ -34,6 +35,7 @@ class _PhoneRegistrationPageState extends State<PhoneRegistrationPage> {
   String countryName = 'India';
   String countryFlag = 'IN';
   bool isButtonEnabled = false;
+  bool isTooManyAttempt = false;
   bool isLoading = false;
 
   @override
@@ -75,6 +77,9 @@ class _PhoneRegistrationPageState extends State<PhoneRegistrationPage> {
       }
       if (state is AuthError) {
         isLoading = false;
+        if (state.errorMessage == SO_MANY_ATTEMPT) {
+          isTooManyAttempt = true;
+        }
       }
       if (state is AuthOtpSent) {
         isLoading = false;
@@ -129,6 +134,10 @@ class _PhoneRegistrationPageState extends State<PhoneRegistrationPage> {
                           keyboardType: TextInputType.number,
                           inputFormatters:
                               AppUtils.onlyDigitsFormatter(max_number),
+                          onChanged: (p0) {
+                            isTooManyAttempt = false;
+                            setState(() {});
+                          },
                         ))
                       ],
                     ),
@@ -140,6 +149,8 @@ class _PhoneRegistrationPageState extends State<PhoneRegistrationPage> {
                         style: textWith16W500(ColorConstants.blue),
                       ),
                     ),
+                    SizedBox(height: 16.h),
+                    tooManyAttemptWidget(appText),
                     const Spacer(),
                     // get otp button
                     CommonButton(
@@ -166,5 +177,24 @@ class _PhoneRegistrationPageState extends State<PhoneRegistrationPage> {
       headerText: appText.what_is_your_phone_number,
       bodyText: appText.enter_your_phone_number_desc,
     );
+  }
+
+  Widget tooManyAttemptWidget(AppLocalizations appText) {
+    return isTooManyAttempt
+        ? Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 5.w),
+            decoration: BoxDecoration(
+              color: ColorConstants.red.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(15.r),
+              border: Border.all(width: 1.w, color: ColorConstants.red),
+            ),
+            child: Text(
+              appText.exceed_the_attempts_try_again_after_eight_hour,
+              textAlign: TextAlign.center,
+              style: textWith14W500(Theme.of(context).focusColor),
+            ),
+          )
+        : const SizedBox.shrink();
   }
 }

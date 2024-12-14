@@ -72,10 +72,12 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
       pageController.nextPage(
           duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
       startResendTimer();
+      AppUtils.closeTheKeyboard(context);
     }
   }
 
   void submitOtpFunc(AppLocalizations appText) {
+    AppUtils.closeTheKeyboard(context);
     if (otpController.text != "123456") {
       setState(() {
         hasError = true;

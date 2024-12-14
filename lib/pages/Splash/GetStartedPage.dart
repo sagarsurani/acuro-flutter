@@ -1,15 +1,12 @@
-import 'package:acuro/application/application/auth/bloc/AuthBloc.dart';
-import 'package:acuro/application/application/auth/bloc/AuthEvent.dart';
+
 import 'package:acuro/components/Common/AnimatedSwitcher.dart';
 import 'package:acuro/components/Common/CommonButton.dart';
 import 'package:acuro/components/Common/CommonSplashBackView.dart';
 import 'package:acuro/components/Common/CommonTextStyle.dart';
 import 'package:acuro/core/constants/ImageConstants.dart';
-import 'package:acuro/core/di/Injectable.dart';
 import 'package:acuro/core/navigator/AppRouter.gr.dart';
 import 'package:acuro/core/theme/AppColors.dart';
 import 'package:acuro/core/utils/AppUtils.dart';
-import 'package:acuro/models/Auth/UserModel.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -25,6 +22,7 @@ class GetStartedPage extends StatefulWidget {
 }
 
 class _GetStartedPageState extends State<GetStartedPage> {
+
   void navigateToRegistrationRoute() {
     context.router.push(const PhoneRegistrationRoute());
   }

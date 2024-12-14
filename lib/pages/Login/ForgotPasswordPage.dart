@@ -64,6 +64,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
   void onTabChanged(int index) {
     setState(() {
       currentIndex = index;
+      hasError = false;
     });
   }
 
@@ -233,9 +234,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
               SizedBox(
                 height: 12.h,
               ),
-              errorView()
             ],
           ),
+          SizedBox(height: 12.h,),
+          errorView()
         ],
       ),
     );

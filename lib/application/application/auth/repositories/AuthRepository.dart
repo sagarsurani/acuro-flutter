@@ -1,4 +1,3 @@
-
 import 'package:acuro/models/Auth/OtpLimitationModel.dart';
 import 'package:acuro/models/Auth/UserModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -26,7 +25,8 @@ abstract class AuthRepository {
   });
 
   Future<void> setOtpValidation({
-    required OTPLimitationModel otpLimitationModel,
+    required String emailOrPhoneName,
+    required String otpFrom,
   });
 
   Future<int> getOtpValidation({
@@ -37,4 +37,8 @@ abstract class AuthRepository {
   Future<bool> userExistsOnDatabase({
     required String mobileNumber,
   });
+
+  Future<List<UserModel>> getAllUsers();
+
+  Future<List<OTPLimitationModel>> getAllOTPLimitationList();
 }

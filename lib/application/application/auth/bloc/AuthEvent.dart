@@ -1,4 +1,5 @@
 import 'package:acuro/core/constants/Constants.dart';
+import 'package:acuro/models/Auth/OtpLimitationModel.dart';
 import 'package:acuro/models/Auth/UserModel.dart';
 import 'package:equatable/equatable.dart';
 
@@ -13,7 +14,7 @@ class SendOtpEvent extends AuthEvent {
   final String phoneNumber;
   final bool isFromForgot;
 
-  const SendOtpEvent({required this.phoneNumber,required this.isFromForgot});
+  const SendOtpEvent({required this.phoneNumber, required this.isFromForgot});
 }
 
 class VerifyOtpEvent extends AuthEvent {
@@ -25,8 +26,9 @@ class VerifyOtpEvent extends AuthEvent {
 
 class ResendOtpEvent extends AuthEvent {
   final String phoneNumber;
+  final bool isFromForgot;
 
-  const ResendOtpEvent({required this.phoneNumber});
+  const ResendOtpEvent({required this.phoneNumber, required this.isFromForgot});
 }
 
 class EmailAuthSignUpEvent extends AuthEvent {
@@ -44,5 +46,26 @@ class LoginAuthEvent extends AuthEvent {
   final String password;
 
   const LoginAuthEvent(
-      {required this.emailOrPhone, required this.loginType, required this.password});
+      {required this.emailOrPhone,
+      required this.loginType,
+      required this.password});
 }
+
+class GetOtpValidationEvent extends AuthEvent {
+  final String emailOrPhoneName;
+  final String isUserFrom;
+
+  const GetOtpValidationEvent(
+      {required this.emailOrPhoneName, required this.isUserFrom});
+}
+
+class SetOtpValidationEvent extends AuthEvent {
+  final String emailOrPhoneName;
+  final String isUserFrom;
+  const SetOtpValidationEvent(
+      {required this.emailOrPhoneName, required this.isUserFrom});
+}
+
+class GetAllUsers extends AuthEvent {}
+
+class GetAllOtpCollection extends AuthEvent {}

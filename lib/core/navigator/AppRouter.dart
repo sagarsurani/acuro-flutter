@@ -21,5 +21,6 @@ class AppRouter extends RootStackRouter {
     autoRouteComponent(page: ForgotPasswordRoute.page),
     autoRouteComponent(page: ForgotOtpRoute.page),
     autoRouteComponent(page: ResetPasswordRoute.page),
+    autoRouteComponent(page: MainRoute.page),
   ];
 }

@@ -1,3 +1,4 @@
+
 import 'package:acuro/application/application/auth/repositories/AuthRepository.dart';
 import 'package:acuro/core/constants/Constants.dart';
 import 'package:acuro/core/persistence/PreferenceHelper.dart';
@@ -6,7 +7,6 @@ import 'package:acuro/models/Auth/OtpLimitationModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:injectable/injectable.dart';
-
 import '../../../../models/Auth/UserModel.dart';
 
 @LazySingleton(as: AuthRepository)
@@ -66,7 +66,6 @@ class AuthRepositoryImpl extends AuthRepository {
           await auth.signInWithCredential(credential);
       return userCredential;
     } catch (e) {
-      // throw UnimplementedError(e.toString());
       return null;
     }
   }
@@ -130,22 +129,26 @@ class AuthRepositoryImpl extends AuthRepository {
 
   @override
   Future<void> setOtpValidation({
-    required OTPLimitationModel otpLimitationModel,
+    required String emailOrPhoneName,
+    required String otpFrom,
   }) async {
-    final docId =
-        '${otpLimitationModel.emailOrPhoneName}-${otpLimitationModel.otpFrom}';
+    final docId = '${emailOrPhoneName.replaceAll(' ', '')}-$otpFrom';
     final docRef = otpValidationCollection().doc(docId);
-
     final docSnapshot = await docRef.get();
     if (docSnapshot.exists) {
       final data = docSnapshot.data() as Map<String, dynamic>;
       final limit = data['limit'] ?? 0;
-
       await docRef.update({
         'limit': limit + 1,
         'time': DateTime.now().toIso8601String(),
       });
     } else {
+      OTPLimitationModel otpLimitationModel = OTPLimitationModel(
+          otpFrom: otpFrom,
+          emailOrPhoneName: emailOrPhoneName,
+          limit: 1,
+          time: DateTime.now().toIso8601String()
+      );
       await docRef.set(otpLimitationModel.toJson());
     }
   }
@@ -155,7 +158,7 @@ class AuthRepositoryImpl extends AuthRepository {
     required String emailOrPhoneName,
     required String otpFrom,
   }) async {
-    final docId = '$emailOrPhoneName-$otpFrom';
+    final docId = '${emailOrPhoneName.replaceAll(' ', '')}-$otpFrom';
     final docRef = otpValidationCollection().doc(docId);
     final docSnapshot = await docRef.get();
     if (docSnapshot.exists) {
@@ -168,9 +171,26 @@ class AuthRepositoryImpl extends AuthRepository {
         await docRef.delete();
         return 0;
       }
-
       return model.limit;
     }
     return 0;
+  }
+
+  @override
+  Future<List<OTPLimitationModel>> getAllOTPLimitationList() async {
+    final docRef = otpValidationCollection();
+    final docSnapshot = await docRef.get();
+    return docSnapshot.docs
+        .map((e) => OTPLimitationModel.fromJson(e.data() as Json))
+        .toList();
+  }
+
+  @override
+  Future<List<UserModel>> getAllUsers() async {
+    final docRef = userCollection();
+    final docSnapshot = await docRef.get();
+    return docSnapshot.docs
+        .map((e) => UserModel.fromJson(e.data() as Json))
+        .toList();
   }
 }

@@ -77,6 +77,8 @@ class _LoginPageState extends State<LoginPage>
   void onTabChanged(int index) {
     setState(() {
       currentIndex = index;
+      errorText.clear();
+      AppUtils.closeTheKeyboard(context);
     });
   }
 
@@ -92,10 +94,10 @@ class _LoginPageState extends State<LoginPage>
   Widget build(BuildContext context) {
     var appText = AppLocalizations.of(context)!;
     return BlocConsumer<AuthBloc, AuthState>(listener: (context, state) {
-      if (state is AuthLoading) {
+      if (state is LoginAuthLoading) {
         isLoading = true;
       }
-      if (state is AuthError) {
+      if (state is LoginAuthError) {
         isLoading = false;
         hasError = true;
         errorText = [
@@ -105,7 +107,7 @@ class _LoginPageState extends State<LoginPage>
       if (state is LoginAuthDone) {
         isLoading = false;
         hasError = false;
-        Fluttertoast.showToast(msg: "Login Done");
+        context.router.push(const MainRoute());
       }
     }, builder: (context, state) {
       return GestureDetector(
