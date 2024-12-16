@@ -42,6 +42,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
   bool isLoading = false;
   String errorText = '';
   bool hasError = false;
+  bool isTooManyAttempt = false;
 
   @override
   void initState() {
@@ -75,6 +76,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
   }
 
   void navigateToOtpPage({required String verificationId}) {
+    hasError = false;
     context.router.push(ForgotOtpRoute(
         isEmail: currentIndex == 0,
         verificationId: verificationId,
@@ -94,6 +96,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
         isLoading = false;
         hasError = true;
         errorText = state.errorMessage;
+        if (state.errorMessage == SO_MANY_ATTEMPT) {
+          isTooManyAttempt = true;
+        }
       }
       if (state is AuthOtpSent) {
         isLoading = false;
@@ -143,6 +148,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
                       onTap: () {
                         if (isButtonEnabled()) {
                           callApiForSentOtp();
+                          // getIt<AuthBloc>().add(GetAllUsers());
                         }
                       },
                       isEnable: isButtonEnabled(),
@@ -184,13 +190,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
             textCapitalization: TextCapitalization.none,
             onChanged: (p0) {
               hasError = false;
+              isTooManyAttempt = false;
               setState(() {});
             },
           ),
           SizedBox(
             height: 12.h,
           ),
-          errorView()
+          tooManyAttemptWidget(appText)
         ],
       ),
     );
@@ -225,9 +232,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
                 controller: phoneController,
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
-                inputFormatters: AppUtils.onlyDigitsFormatter(max_number),
+                inputFormatters: AppUtils.onlyDigitsFormatter(EnvVariable.maxNumber),
                 onChanged: (p0) {
                   hasError = false;
+                  isTooManyAttempt = false;
                   setState(() {});
                 },
               )),
@@ -236,19 +244,36 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
               ),
             ],
           ),
-          SizedBox(height: 12.h,),
-          errorView()
+          SizedBox(
+            height: 12.h,
+          ),
+          tooManyAttemptWidget(appText)
         ],
       ),
     );
   }
 
-  Widget errorView() {
-    return hasError
-        ? Text(
-            errorText,
-            style: textWith16W400(ColorConstants.red),
+  Widget tooManyAttemptWidget(AppLocalizations appText) {
+    return isTooManyAttempt
+        ? Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 5.w),
+            decoration: BoxDecoration(
+              color: ColorConstants.red.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(15.r),
+              border: Border.all(width: 1.w, color: ColorConstants.red),
+            ),
+            child: Text(
+              appText.exceed_the_attempts_try_again_after_eight_hour,
+              textAlign: TextAlign.center,
+              style: textWith14W500(Theme.of(context).focusColor),
+            ),
           )
-        : const SizedBox.shrink();
+        : hasError
+            ? Text(
+                errorText,
+                style: textWith16W400(ColorConstants.red),
+              )
+            : const SizedBox.shrink();
   }
 }

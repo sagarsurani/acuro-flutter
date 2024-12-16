@@ -86,7 +86,7 @@ class _LoginPageState extends State<LoginPage>
     return currentIndex == 0
         ? AppUtils.isEmailValid(emailController.text.trim()) &&
             AppUtils.isPasswordValid(passwordController.text.trim())
-        : phoneController.text.trim().length == max_number &&
+        : phoneController.text.trim().length == EnvVariable.maxNumber &&
             AppUtils.isPasswordValid(mobilePasswordController.text.trim());
   }
 
@@ -103,6 +103,7 @@ class _LoginPageState extends State<LoginPage>
         errorText = [
           state.errorMessage,
         ];
+        print(state.errorMessage);
       }
       if (state is LoginAuthDone) {
         isLoading = false;
@@ -256,7 +257,7 @@ class _LoginPageState extends State<LoginPage>
                 controller: phoneController,
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
-                inputFormatters: AppUtils.onlyDigitsFormatter(max_number),
+                inputFormatters: AppUtils.onlyDigitsFormatter(EnvVariable.maxNumber),
                 onChanged: (p0) {
                   hasError = false;
                   setState(() {});
@@ -287,7 +288,11 @@ class _LoginPageState extends State<LoginPage>
             },
           ),
           SizedBox(height: 12.h),
+
+          // forgot password widget
           forgotPasswordWidget(appText),
+
+          // error widget
           SizedBox(height: 12.h),
           errorView(appText)
         ],

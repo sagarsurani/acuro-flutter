@@ -1,5 +1,4 @@
 import 'package:acuro/core/constants/Constants.dart';
-import 'package:acuro/models/Auth/OtpLimitationModel.dart';
 import 'package:acuro/models/Auth/UserModel.dart';
 import 'package:equatable/equatable.dart';
 
@@ -51,21 +50,23 @@ class LoginAuthEvent extends AuthEvent {
       required this.password});
 }
 
-class GetOtpValidationEvent extends AuthEvent {
-  final String emailOrPhoneName;
-  final String isUserFrom;
-
-  const GetOtpValidationEvent(
-      {required this.emailOrPhoneName, required this.isUserFrom});
-}
-
-class SetOtpValidationEvent extends AuthEvent {
-  final String emailOrPhoneName;
-  final String isUserFrom;
-  const SetOtpValidationEvent(
-      {required this.emailOrPhoneName, required this.isUserFrom});
-}
-
 class GetAllUsers extends AuthEvent {}
 
 class GetAllOtpCollection extends AuthEvent {}
+
+class DeleteAnyCollection extends AuthEvent {
+  final String collectionName;
+
+  const DeleteAnyCollection({required this.collectionName});
+}
+
+class ResetPassword extends AuthEvent {
+  final String emailOrPhone;
+  final bool isPhone;
+  final String password;
+
+  const ResetPassword(
+      {required this.emailOrPhone,
+      required this.password,
+      required this.isPhone});
+}

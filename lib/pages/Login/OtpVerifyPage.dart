@@ -53,6 +53,7 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
   }
 
   void callApiForSentOtp() {
+    hasError = false;
     getIt<AuthBloc>().add(VerifyOtpEvent(
         smsCode: otpController.text.trim(), verificationId: verificationId));
   }
@@ -105,12 +106,13 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
       }
       if (state is AuthVerifyError) {
         isLoading = false;
-        if (!state.errorMessage.contains(BLOCKED)) {
+        if (state.errorMessage == SO_MANY_ATTEMPT) {
+          _timer?.cancel();
+          canResend = false;
+          resendOtpValidation = 6;
+        } else if (!state.errorMessage.contains(BLOCKED)) {
           hasError = true;
           errorText = appText.code_you_have_entered_not_matched;
-        } else if (state.errorMessage == SO_MANY_ATTEMPT) {
-          _timer?.cancel();
-          canResend = resendOtpValidation > 5;
         }
       }
       if (state is ResendOtpSend) {
@@ -127,7 +129,6 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
           AppUtils.closeTheKeyboard(context);
         },
         child: Scaffold(
-          backgroundColor: ColorConstants.white1,
           body: CommonBackgroundView(
             child: Padding(
               padding: EdgeInsets.only(

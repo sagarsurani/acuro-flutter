@@ -1,9 +1,7 @@
 import 'package:acuro/components/Common/CommonBackgroundView.dart';
-import 'package:acuro/components/Common/CommonSplashBackView.dart';
-import 'package:acuro/components/Common/CommonTextStyle.dart';
+import 'package:acuro/components/Common/CommonErrorWidget.dart';
 import 'package:acuro/components/Common/CustomTextField.dart';
 import 'package:acuro/components/Login/CommonAuthHeader.dart';
-import 'package:acuro/core/constants/ImageConstants.dart';
 import 'package:acuro/core/navigator/AppRouter.gr.dart';
 import 'package:acuro/core/theme/AppColors.dart';
 import 'package:acuro/core/utils/AppUtils.dart';
@@ -11,8 +9,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import '../../components/Common/AnimatedSwitcher.dart';
 import '../../components/Common/CommonButton.dart';
 
 @RoutePage()
@@ -169,25 +165,8 @@ class _TakeUserDetailsPageState extends State<TakeUserDetailsPage> {
 
   Widget errorView(AppLocalizations appText) {
     return hasError
-        ? Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: errorsText.map((error) {
-              return Padding(
-                padding: EdgeInsets.only(bottom: 10.h),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(ImageConstants.icRedClose),
-                    SizedBox(width: 2.w),
-                    Text(
-                      error,
-                      style: textWith14W400(ColorConstants.red),
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
+        ? CommonErrorWidget(
+            errors: errorsText,
           )
         : const SizedBox.shrink();
   }

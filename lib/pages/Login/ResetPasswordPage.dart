@@ -1,20 +1,28 @@
+import 'package:acuro/application/application/auth/bloc/AuthEvent.dart';
+import 'package:acuro/application/application/auth/bloc/AuthState.dart';
 import 'package:acuro/components/Common/AnimatedSwitcher.dart';
 import 'package:acuro/components/Common/CommonBackgroundView.dart';
 import 'package:acuro/components/Common/CommonButton.dart';
+import 'package:acuro/components/Common/CommonErrorWidget.dart';
 import 'package:acuro/components/Common/CommonTextStyle.dart';
 import 'package:acuro/components/Common/CustomTextField.dart';
 import 'package:acuro/core/constants/ImageConstants.dart';
+import 'package:acuro/core/di/Injectable.dart';
 import 'package:acuro/core/theme/AppColors.dart';
 import 'package:acuro/core/utils/AppUtils.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import '../../application/application/auth/bloc/AuthBloc.dart';
 
 @RoutePage()
 class ResetPasswordPage extends StatefulWidget {
-  const ResetPasswordPage({super.key});
+  final String emailOrPhone;
+  final bool isPhone;
+  const ResetPasswordPage(
+      {super.key, required this.emailOrPhone, required this.isPhone});
 
   @override
   State<ResetPasswordPage> createState() => _ResetPasswordPageState();
@@ -24,6 +32,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   bool hasError = false;
+  bool isLoading = false;
   bool isPasswordVisible = false;
   bool isConformPasswordVisible = false;
   final pageController = PageController();
@@ -35,6 +44,13 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         confirmPasswordController.text.trim().isNotEmpty &&
         AppUtils.isPasswordValid(passwordController.text.trim()) &&
         passwordController.text.trim() == confirmPasswordController.text.trim();
+  }
+
+  void callResetPasswordApi() {
+    getIt<AuthBloc>().add(ResetPassword(
+        emailOrPhone: widget.emailOrPhone,
+        password: passwordController.text.trim(),
+        isPhone: widget.isPhone));
   }
 
   void checkPasswordChangedValidation(String text) {
@@ -64,47 +80,67 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   }
 
   void tapOnSubmitPassword() {
-    if (isBothPasswordMatched()) {}
+    if (isBothPasswordMatched()) {
+      callResetPasswordApi();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     var appText = AppLocalizations.of(context)!;
-    return Scaffold(
-      backgroundColor: ColorConstants.white1,
-      body: GestureDetector(
-        onTap: () {
-          AppUtils.closeTheKeyboard(context);
-        },
-        child: Scaffold(
-          body: CommonBackgroundView(
-            child: Padding(
-              padding: EdgeInsets.only(
-                  top: 90.h, bottom: 24.h, left: 20.w, right: 20.w),
-              child: SmoothView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // content view
-                    resetYourPasswordView(appText),
-                    // error view
-                    errorView(appText),
-                    SizedBox(height: 16.h),
-                    if (!hasError) const Spacer(),
-                    // submit button
-                    CommonButton(
-                        onTap: tapOnSubmitPassword,
-                        isEnable: isBothPasswordMatched(),
-                        buttonText: appText.reset_password)
-                  ],
+    return BlocConsumer<AuthBloc, AuthState>(listener: (context, state) {
+      if (state is ResetAuthLoading) {
+        isLoading = true;
+      }
+      if (state is ResetPasswordError) {
+        isLoading = false;
+        hasError = true;
+        errorsText = [
+          state.errorMessage,
+        ];
+      }
+      if (state is ResetPasswordDone) {
+        isLoading = false;
+        context.router.popUntil((route) => route.isFirst);
+      }
+    }, builder: (context, state) {
+      return Scaffold(
+        backgroundColor: ColorConstants.white1,
+        body: GestureDetector(
+          onTap: () {
+            AppUtils.closeTheKeyboard(context);
+          },
+          child: Scaffold(
+            body: CommonBackgroundView(
+              child: Padding(
+                padding: EdgeInsets.only(
+                    top: 90.h, bottom: 24.h, left: 20.w, right: 20.w),
+                child: SmoothView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // content view
+                      resetYourPasswordView(appText),
+                      // error view
+                      errorView(appText),
+                      SizedBox(height: 16.h),
+                      const Spacer(),
+                      // submit button
+                      CommonButton(
+                          onTap: tapOnSubmitPassword,
+                          isLoading: isLoading,
+                          isEnable: isBothPasswordMatched(),
+                          buttonText: appText.reset_password)
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget resetYourPasswordView(AppLocalizations appText) {
@@ -164,7 +200,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             onChanged: (p0) {
               checkPasswordChangedValidation(confirmPasswordController.text);
             },
-
           ),
           SizedBox(height: 12.h),
         ],
@@ -174,30 +209,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
   Widget errorView(AppLocalizations appText) {
     return hasError
-        ? Expanded(
-            child: ListView.separated(
-              separatorBuilder: (context, index) {
-                return SizedBox(height: 5.h);
-              },
-              padding: EdgeInsets.zero,
-              itemCount: errorsText.length,
-              itemBuilder: (context, index) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(ImageConstants.icRedClose),
-                    SizedBox(
-                      width: 2.w,
-                    ),
-                    Text(
-                      errorsText[index],
-                      style: textWith14W400(ColorConstants.red),
-                    ),
-                  ],
-                );
-              },
-            ),
+        ? CommonErrorWidget(
+            errors: errorsText,
           )
         : const SizedBox.shrink();
   }

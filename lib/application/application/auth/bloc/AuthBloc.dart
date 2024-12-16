@@ -20,10 +20,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<ResendOtpEvent>(_resendOtpEvent);
     on<EmailAuthSignUpEvent>(_emailLoginEvent);
     on<LoginAuthEvent>(_loginAuthEvent);
-    on<GetOtpValidationEvent>(_getOtpValidation);
-    on<SetOtpValidationEvent>(_setOtpValidation);
     on<GetAllUsers>(_getAllUsers);
     on<GetAllOtpCollection>(_getAllOtpCollection);
+    on<DeleteAnyCollection>(_deleteAnyCollection);
+    on<ResetPassword>(_resetPassword);
   }
 
   Future<void> _sendOtp(SendOtpEvent event, Emitter<AuthState> emit) async {
@@ -32,18 +32,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       String varId = "";
       if (event.isFromForgot) {
         bool isUserExists = await authRepository.userExistsOnDatabase(
-            mobileNumber: event.phoneNumber);
-
+            authValue: event.phoneNumber, isMobile: true);
         if (!isUserExists) {
           emit(const AuthError(errorMessage: NUMBER_NOT_REGISTER));
           return;
         }
       }
       int otpAttempt = await authRepository.getOtpValidation(
-          emailOrPhoneName: event.phoneNumber,
-          otpFrom: event.isFromForgot ? FORGOTPHONE : PHONEAUTH);
+          authValue: event.phoneNumber,
+          otpFrom: event.isFromForgot ? FORGOTPHONE : PHONEAUTH,
+          isMobile: true);
 
       if (otpAttempt > 5) {
+        emit(AuthInitial());
         emit(const AuthError(errorMessage: SO_MANY_ATTEMPT));
         return;
       }
@@ -51,8 +52,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       varId = await authRepository.sendOtp(phoneNumber: event.phoneNumber);
 
       await authRepository.setOtpValidation(
-          emailOrPhoneName: event.phoneNumber,
-          otpFrom: event.isFromForgot ? FORGOTPHONE : PHONEAUTH);
+          authValue: event.phoneNumber,
+          otpFrom: event.isFromForgot ? FORGOTPHONE : PHONEAUTH,
+          isMobile: true);
 
       emit(AuthOtpSent(verificationId: varId));
     } on FirebaseAuthException catch (e) {
@@ -63,19 +65,24 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _verifyOtp(VerifyOtpEvent event, Emitter<AuthState> emit) async {
+    print("_____________ 2");
     emit(AuthVerifyLoading());
     try {
+      print("_____________ 3");
       UserCredential? userCredential = await authRepository.verifyOtp(
         verificationId: event.verificationId,
         smsCode: event.smsCode,
       );
+      print("_____________ 4");
       if (userCredential != null) {
         emit(AuthVerified(userCredential: userCredential));
       } else {
-        emit(const AuthError(errorMessage: ""));
+        print("_____________ 5");
+        emit(const AuthVerifyError(errorMessage: ""));
       }
     } on FirebaseAuthException catch (e) {
-      emit(AuthError(errorMessage: ToastUtils.getAuthMessage(e.toString())));
+      print("_____________ 6");
+      emit(AuthVerifyError(errorMessage: ToastUtils.getAuthMessage(e.toString())));
     }
   }
 
@@ -84,24 +91,28 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     String varId = "";
     try {
       int otpAttempt = await authRepository.getOtpValidation(
-          emailOrPhoneName: event.phoneNumber,
-          otpFrom: event.isFromForgot ? FORGOTPHONE : PHONEAUTH);
+          authValue: event.phoneNumber,
+          otpFrom: event.isFromForgot ? FORGOTPHONE : PHONEAUTH,
+          isMobile: true);
 
       if (otpAttempt > 5) {
+        emit(AuthInitial());
         emit(const AuthVerifyError(errorMessage: SO_MANY_ATTEMPT));
         return;
       }
-
       varId = await authRepository.sendOtp(phoneNumber: event.phoneNumber);
 
       await authRepository.setOtpValidation(
-          emailOrPhoneName: event.phoneNumber,
-          otpFrom: event.isFromForgot ? FORGOTPHONE : PHONEAUTH);
+          authValue: event.phoneNumber,
+          otpFrom: event.isFromForgot ? FORGOTPHONE : PHONEAUTH,
+          isMobile: true);
       emit(ResendOtpSend(verificationId: varId));
     } on FirebaseAuthException catch (e) {
-      emit(AuthVerifyError(errorMessage: ToastUtils.getAuthMessage(e.toString())));
+      emit(AuthVerifyError(
+          errorMessage: ToastUtils.getAuthMessage(e.toString())));
     } catch (e) {
-      emit(AuthVerifyError(errorMessage: ToastUtils.getAuthMessage(e.toString())));
+      emit(AuthVerifyError(
+          errorMessage: ToastUtils.getAuthMessage(e.toString())));
     }
   }
 
@@ -117,15 +128,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           email: event.email, password: event.password);
       credential = await currentUser?.linkWithCredential(emailCredential);
 
-      String? accessToken = await credential?.user?.getIdToken();
-      await PreferenceHelper.setAccessToken(accessToken!);
-      await PreferenceHelper.setIsLogin(false);
-
       if (credential != null && credential.user!.email != null) {
+        // set accessToken to preference
+        String? accessToken = await credential.user?.getIdToken();
+        await PreferenceHelper.setAccessToken(accessToken!);
+        await PreferenceHelper.setIsLogin(false);
+        // set user data to database
         event.userData.phoneNumber = credential.user?.phoneNumber ?? "0";
         event.userData.createdAt = DateTime.now();
         await authRepository.addUserToDatabase(
             userModel: event.userData, authId: credential.user?.uid ?? "");
+        // emit state
         emit(EmailAuthDone(userCredential: credential));
       }
     } on FirebaseAuthException catch (e) {
@@ -138,64 +151,82 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _loginAuthEvent(
       LoginAuthEvent event, Emitter<AuthState> emit) async {
     emit(LoginAuthLoading());
+
     try {
-      String email = "";
-      UserCredential? userCredential;
+      String email = event.loginType == LoginType.signInWithPhone
+          ? await getEmailFromUserData(event.emailOrPhone, true)
+          : event.emailOrPhone;
 
-      if (event.loginType == LoginType.signInWithPhone) {
-        UserModel? userModel = await authRepository.getUserFromDatabase(
-            mobileNumber: event.emailOrPhone);
-        if (userModel != null && userModel.email != null) {
-          email = userModel.email ?? "";
-        }
-      } else {
-        email = event.emailOrPhone;
-      }
-
-      if (email.isNotEmpty) {
-        userCredential = await authRepository.signInWithEmail(
-            email: email, password: event.password);
-      } else {
+      if (email.isEmpty) {
         emit(const LoginAuthError(errorMessage: SOMETHING_WANT_WRONG));
+        return;
       }
-      if (userCredential != null && userCredential.user!.email != null) {
+
+      UserCredential? userCredential = await authRepository.signInWithEmail(
+        email: email,
+        password: event.password,
+      );
+
+      if (userCredential != null && userCredential.user?.email != null) {
         String? accessToken = await userCredential.user?.getIdToken();
         await PreferenceHelper.setAccessToken(accessToken ?? "");
         await PreferenceHelper.setIsLogin(true);
         emit(LoginAuthDone(userCredential: userCredential));
+      } else {
+        emit(const LoginAuthError(errorMessage: SOMETHING_WANT_WRONG));
       }
     } on FirebaseAuthException catch (e) {
-      emit(LoginAuthError(errorMessage: ToastUtils.getAuthMessage(e.toString())));
+      emit(LoginAuthError(
+        errorMessage: ToastUtils.getAuthMessage(e.toString()),
+      ));
+    } catch (e) {
+      emit(LoginAuthError(
+        errorMessage: ToastUtils.getAuthMessage(e.toString()),
+      ));
     }
   }
 
-  Future<void> _getOtpValidation(
-      GetOtpValidationEvent event, Emitter<AuthState> emit) async {
+  Future<void> _resetPassword(
+      ResetPassword event, Emitter<AuthState> emit) async {
+    emit(ResetAuthLoading());
     try {
-      int otpValidation = await authRepository.getOtpValidation(
-          emailOrPhoneName: event.emailOrPhoneName, otpFrom: event.isUserFrom);
-      emit(OtpValidationDone(otpValidation: otpValidation));
-    } catch (e) {
-      emit(AuthError(errorMessage: ToastUtils.getAuthMessage(e.toString())));
+      bool isResetPasswordDone = await authRepository.resetPassword(
+          authValue: event.emailOrPhone,
+          password: event.password,
+          isPhone: event.isPhone);
+      if (!isResetPasswordDone) {
+        emit(const ResetPasswordError(errorMessage: SOMETHING_WANT_WRONG));
+        return;
+      }
+      emit(ResetPasswordDone());
+    } catch (err) {
+      emit(ResetPasswordError(errorMessage: err.toString()));
     }
   }
 
-  Future<void> _setOtpValidation(
-      SetOtpValidationEvent event, Emitter<AuthState> emit) async {
-    try {
-      await authRepository.setOtpValidation(
-        emailOrPhoneName: event.emailOrPhoneName,
-        otpFrom: event.isUserFrom,
-      );
-      emit(SetOtpValidationDone());
-    } catch (e) {
-      emit(AuthError(errorMessage: ToastUtils.getAuthMessage(e.toString())));
+  Future<String> getEmailFromUserData(String emailOrPhone, bool isPhone) async {
+    UserModel? userModel = await authRepository.getUserFromDatabase(
+        authValue: emailOrPhone, isMobile: isPhone);
+    if (userModel != null) {
+      return userModel.email ?? "";
+    } else {
+      return "";
+    }
+  }
+
+  Future<String> isUserExistsOnDatabase(
+      String emailOrPhone, bool isPhone) async {
+    UserModel? userModel = await authRepository.getUserFromDatabase(
+        authValue: emailOrPhone, isMobile: isPhone);
+    if (userModel != null) {
+      return userModel.email ?? "";
+    } else {
+      return "";
     }
   }
 
   Future<void> _getAllUsers(GetAllUsers event, Emitter<AuthState> emit) async {
     List<UserModel> userList = await authRepository.getAllUsers();
-    print("_____________ userList");
     print(userList);
   }
 
@@ -203,7 +234,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       GetAllOtpCollection event, Emitter<AuthState> emit) async {
     List<OTPLimitationModel> otpList =
         await authRepository.getAllOTPLimitationList();
-    print("_____________ otpList");
     print(otpList);
+  }
+
+  Future<void> _deleteAnyCollection(
+      DeleteAnyCollection event, Emitter<AuthState> emit) async {
+    await authRepository.deleteAnyCollection(
+        collectionName: event.collectionName);
   }
 }

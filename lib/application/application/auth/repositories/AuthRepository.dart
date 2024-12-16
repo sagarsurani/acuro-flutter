@@ -21,24 +21,39 @@ abstract class AuthRepository {
   });
 
   Future<UserModel?> getUserFromDatabase({
-    required String mobileNumber,
+    required String authValue,
+    required bool isMobile,
   });
 
   Future<void> setOtpValidation({
-    required String emailOrPhoneName,
+    required String authValue,
     required String otpFrom,
+    required bool isMobile,
   });
 
   Future<int> getOtpValidation({
-    required String emailOrPhoneName,
+    required String authValue,
     required String otpFrom,
+    required bool isMobile,
   });
 
   Future<bool> userExistsOnDatabase({
-    required String mobileNumber,
+    required String authValue,
+    required bool isMobile,
   });
 
   Future<List<UserModel>> getAllUsers();
 
   Future<List<OTPLimitationModel>> getAllOTPLimitationList();
+
+  Future<void> deleteAnyCollection({
+    required String collectionName,
+  });
+
+  Future<bool> resetPassword({
+    required String authValue,
+    required String password,
+    required bool isPhone,
+  });
+  
 }

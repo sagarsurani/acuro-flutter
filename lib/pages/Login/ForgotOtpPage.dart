@@ -94,7 +94,8 @@ class _ForgotOtpPageState extends State<ForgotOtpPage> {
   }
 
   void navigateToResetPasswordRoute() {
-    context.router.replace(const ResetPasswordRoute());
+    context.router.replace(ResetPasswordRoute(
+        emailOrPhone: widget.detailsValue, isPhone: !widget.isEmail));
   }
 
   @override
@@ -107,17 +108,18 @@ class _ForgotOtpPageState extends State<ForgotOtpPage> {
   Widget build(BuildContext context) {
     var appText = AppLocalizations.of(context)!;
     return BlocConsumer<AuthBloc, AuthState>(listener: (context, state) {
-      if (state is AuthLoading) {
+      if (state is AuthVerifyLoading) {
         isLoading = true;
       }
       if (state is AuthVerifyError) {
         isLoading = false;
-        if (!state.errorMessage.contains(BLOCKED)) {
+        if (state.errorMessage == SO_MANY_ATTEMPT) {
+          _timer?.cancel();
+          canResend = false;
+          resendOtpValidation = 6;
+        } else if (!state.errorMessage.contains(BLOCKED)) {
           hasError = true;
           errorText = appText.code_you_have_entered_not_matched;
-        } else if (state.errorMessage == SO_MANY_ATTEMPT) {
-          _timer?.cancel();
-          canResend = resendOtpValidation > 5;
         }
       }
       if (state is ResendOtpSend) {

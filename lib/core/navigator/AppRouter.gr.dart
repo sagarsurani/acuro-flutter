@@ -352,10 +352,19 @@ class PhoneRegistrationRoute extends _i16.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i11.ResetPasswordPage]
-class ResetPasswordRoute extends _i16.PageRouteInfo<void> {
-  const ResetPasswordRoute({List<_i16.PageRouteInfo>? children})
-      : super(
+class ResetPasswordRoute extends _i16.PageRouteInfo<ResetPasswordRouteArgs> {
+  ResetPasswordRoute({
+    _i17.Key? key,
+    required String emailOrPhone,
+    required bool isPhone,
+    List<_i16.PageRouteInfo>? children,
+  }) : super(
           ResetPasswordRoute.name,
+          args: ResetPasswordRouteArgs(
+            key: key,
+            emailOrPhone: emailOrPhone,
+            isPhone: isPhone,
+          ),
           initialChildren: children,
         );
 
@@ -364,9 +373,33 @@ class ResetPasswordRoute extends _i16.PageRouteInfo<void> {
   static _i16.PageInfo page = _i16.PageInfo(
     name,
     builder: (data) {
-      return const _i11.ResetPasswordPage();
+      final args = data.argsAs<ResetPasswordRouteArgs>();
+      return _i11.ResetPasswordPage(
+        key: args.key,
+        emailOrPhone: args.emailOrPhone,
+        isPhone: args.isPhone,
+      );
     },
   );
+}
+
+class ResetPasswordRouteArgs {
+  const ResetPasswordRouteArgs({
+    this.key,
+    required this.emailOrPhone,
+    required this.isPhone,
+  });
+
+  final _i17.Key? key;
+
+  final String emailOrPhone;
+
+  final bool isPhone;
+
+  @override
+  String toString() {
+    return 'ResetPasswordRouteArgs{key: $key, emailOrPhone: $emailOrPhone, isPhone: $isPhone}';
+  }
 }
 
 /// generated route for

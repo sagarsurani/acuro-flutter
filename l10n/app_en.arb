@@ -74,8 +74,10 @@
   "please_enter_valid_email_address_password": "Please enter a valid email/phone and password",
   "too_many_requests": "Too many requests.",
   "there_already_account_same_email": "There is already an account with the same email address but different login details.",
+  "user_already_linked_with_another_account": "User already linked with another account.",
   "the_login_details_entered_invalid_have_expired": "The login details you entered are invalid or have expired.",
   "invalid_email_address": "Invalid email address.",
+  "network_not_available": "Network not available.",
   "exceed_the_attempts_try_again_after_eight_hour": "Exceed the attempts. Try again after 8 hours",
   "welcome_to_acuro": "Welcome To Acuro"
 

@@ -12,12 +12,14 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
       email: json['email'] as String?,
       phoneNumber: json['phoneNumber'] as String?,
       createdAt: TimeUtils.fromIso8601String(json['createdAt'] as String?),
+      isDeleted: json['isDeleted'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       'firstName': instance.firstName,
       'lastName': instance.lastName,
       'email': instance.email,
+      'isDeleted': instance.isDeleted,
       'phoneNumber': instance.phoneNumber,
       'createdAt': TimeUtils.toIso8601String(instance.createdAt),
     };

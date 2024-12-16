@@ -17,6 +17,8 @@ class AuthVerifyLoading extends AuthState {}
 
 class LoginAuthLoading extends AuthState {}
 
+class ResetAuthLoading extends AuthState {}
+
 class AuthOtpSent extends AuthState {
   final String verificationId;
 
@@ -72,3 +74,11 @@ class OtpValidationDone extends AuthState {
 }
 
 class SetOtpValidationDone extends AuthState {}
+
+class ResetPasswordError extends AuthState {
+  final String errorMessage;
+
+  const ResetPasswordError({required this.errorMessage});
+}
+
+class ResetPasswordDone extends AuthState {}

@@ -9,13 +9,15 @@ part 'OtpLimitationModel.g.dart';
 @JsonSerializable(explicitToJson: true)
 class OTPLimitationModel extends Equatable {
   String otpFrom;
-  String emailOrPhoneName;
+  String email;
+  String phoneNumber;
   int limit;
   String time;
 
   OTPLimitationModel({
     required this.otpFrom,
-    required this.emailOrPhoneName, 
+    required this.email,
+    required this.phoneNumber,
     required this.limit,
     required this.time,
   });
@@ -28,8 +30,9 @@ class OTPLimitationModel extends Equatable {
   @override
   List<Object?> get props => [
     otpFrom,
-    emailOrPhoneName,
-    limit, 
+    email,
+    phoneNumber,
+    limit,
     time,
   ];
 }

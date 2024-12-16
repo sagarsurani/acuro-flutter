@@ -6,6 +6,10 @@ typedef Json = Map<String, dynamic>;
 
 const ACURO = "Acuro";
 const AEONIK = "Aeonik";
+const HEADER_PROTECTED_AUTHENTICATION_PREFIX = 'Bearer';
+const HEADER_AUTHORIZATION = 'Authorization';
+const APPLICATION_JSON = 'application/json';
+const CONTENT_TYPE = 'Content-Type';
 
 enum RoleSelectionEnum { selected, unSelected, comingSoon }
 

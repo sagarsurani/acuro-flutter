@@ -9,6 +9,7 @@ class UserModel extends Equatable {
   final String? firstName;
   final String? lastName;
   final String? email;
+  final bool isDeleted;
   String? phoneNumber;
   @JsonKey(
       fromJson: TimeUtils.fromIso8601String, toJson: TimeUtils.toIso8601String)
@@ -20,6 +21,7 @@ class UserModel extends Equatable {
     this.email,
     this.phoneNumber,
     this.createdAt,
+    this.isDeleted = false,
   });
 
   factory UserModel.fromJson(Json json) => _$UserModelFromJson(json);
@@ -30,6 +32,7 @@ class UserModel extends Equatable {
   List<Object?> get props => [
         firstName,
         lastName,
+        isDeleted,
         email,
         phoneNumber,
         createdAt,

@@ -12,10 +12,11 @@ class ToastUtils {
     AppLocalizations appText =
     AppLocalizations.of(GlobalConstant.currentPageContext)!;
 
-    if (message.contains("[firebase_auth/invalid-credential]")) {
+    if (message.contains("firebase_auth")) {
       message = message.replaceAll("[firebase_auth/invalid-credential]", "").trim();
+      message = message.replaceAll("[firebase_auth/provider-already-linked]", "").trim();
+      message = message.replaceAll("[firebase_auth/network-request-failed]", "").trim();
     }
-
     switch (message) {
       case "invalid-email":
         return appText.invalid_email;
@@ -28,6 +29,10 @@ class ToastUtils {
         return appText.too_many_requests;
       case "account-exists-with-different-credential":
         return appText.there_already_account_same_email;
+      case "User has already been linked to the given provider.":
+        return appText.user_already_linked_with_another_account;
+      case "A network error (such as timeout, interrupted connection or unreachable host) has occurred.":
+        return appText.network_not_available;
       default:
         if (message.contains("[firebase_auth/invalid-email]")) {
           return appText.invalid_email_address;

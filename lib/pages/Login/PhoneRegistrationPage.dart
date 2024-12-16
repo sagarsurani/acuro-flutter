@@ -133,7 +133,7 @@ class _PhoneRegistrationPageState extends State<PhoneRegistrationPage> {
                           textInputAction: TextInputAction.done,
                           keyboardType: TextInputType.number,
                           inputFormatters:
-                              AppUtils.onlyDigitsFormatter(max_number),
+                              AppUtils.onlyDigitsFormatter(EnvVariable.maxNumber),
                           onChanged: (p0) {
                             isTooManyAttempt = false;
                             setState(() {});
