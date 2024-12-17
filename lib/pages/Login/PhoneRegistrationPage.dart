@@ -54,7 +54,10 @@ class _PhoneRegistrationPageState extends State<PhoneRegistrationPage> {
 
   void validatePhoneNumber(String value) {
     setState(() {
-      isButtonEnabled = value.length == 10;
+      isButtonEnabled = value.length == EnvVariable.maxNumber;
+      if(isButtonEnabled){
+        AppUtils.closeTheKeyboard(context);
+      }
     });
   }
 
@@ -65,7 +68,7 @@ class _PhoneRegistrationPageState extends State<PhoneRegistrationPage> {
   }
 
   void navigateToLoginRoute() {
-    context.router.push(const LoginRoute());
+    context.router.replace(const LoginRoute());
   }
 
   @override
@@ -90,12 +93,13 @@ class _PhoneRegistrationPageState extends State<PhoneRegistrationPage> {
         onTap: () {
           AppUtils.closeTheKeyboard(context);
         },
-        child: Scaffold(
-          body: CommonBackgroundView(
-            child: Padding(
-              padding: EdgeInsets.only(
-                  top: 60.h, bottom: 24.h, left: 20.w, right: 20.w),
-              child: SmoothView(
+        child: CommonBackgroundView(
+          child: Padding(
+            padding: EdgeInsets.only(
+                top: 60.h, bottom: 24.h, left: 20.w, right: 20.w),
+            child: SmoothView(
+              child: IgnorePointer(
+                ignoring: isLoading,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,3 +1,4 @@
+import 'package:acuro/components/Common/AnimatedSwitcher.dart';
 import 'package:acuro/components/Common/CommonBackgroundView.dart';
 import 'package:acuro/components/Common/CommonButton.dart';
 import 'package:acuro/components/Common/CommonSplashBackView.dart';
@@ -62,8 +63,11 @@ class _SelectCommodityPageState extends State<SelectCommodityPage> {
   @override
   Widget build(BuildContext context) {
     var appText = AppLocalizations.of(context)!;
-    return Scaffold(
-      body: CommonBackgroundView(
+    return GestureDetector(
+      onTap: () {
+        AppUtils.closeTheKeyboard(context);
+      },
+      child: CommonBackgroundView(
         child: Padding(
           padding:
               EdgeInsets.only(top: 60.h, bottom: 24.h, left: 20.w, right: 20.w),
@@ -235,7 +239,7 @@ class _SelectCommodityPageState extends State<SelectCommodityPage> {
                     ),
                   if (commodityList[index].isOpened) ...[
                     SizedBox(height: 16.h),
-                    marketWidget(commodityList[index])
+                    DropDownEffect(child: marketWidget(commodityList[index]))
                   ]
                 ],
               ),

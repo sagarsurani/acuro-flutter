@@ -30,6 +30,20 @@ class ResendOtpEvent extends AuthEvent {
   const ResendOtpEvent({required this.phoneNumber, required this.isFromForgot});
 }
 
+class SendEmailOtpEvent extends AuthEvent {
+  final String email;
+  final bool isFromForgot;
+
+  const SendEmailOtpEvent({required this.email, required this.isFromForgot});
+}
+
+class VerifyEmailOtpEvent extends AuthEvent {
+  final String verificationId;
+  final String code;
+
+  const VerifyEmailOtpEvent({required this.verificationId, required this.code});
+}
+
 class EmailAuthSignUpEvent extends AuthEvent {
   final UserModel userData;
   final String email;

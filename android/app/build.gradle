@@ -36,10 +36,10 @@ android {
 
     signingConfigs {
         release {
-            keyAlias "SquareInfosoft"
-            keyPassword "SquareInfosoft"
-            storeFile file('../SquareInfosoft')
-            storePassword "SquareInfosoft"
+            keyAlias "key0"
+            keyPassword "AcuroSquare"
+            storeFile file('../acuroKey0')
+            storePassword "AcuroSquare"
         }
     }
 

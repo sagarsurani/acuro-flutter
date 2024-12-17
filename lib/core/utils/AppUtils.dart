@@ -46,4 +46,14 @@ class AppUtils {
       FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z]*$')),
     ];
   }
+
+  static void pageScrollUp(
+      {required double height, required ScrollController controller}) {
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (controller.hasClients) {
+        controller.animateTo(height,
+            duration: const Duration(milliseconds: 500), curve: Curves.linear);
+      }
+    });
+  }
 }

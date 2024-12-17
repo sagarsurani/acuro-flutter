@@ -1,9 +1,9 @@
+
 import 'package:acuro/components/Common/CommonBackgroundView.dart';
-import 'package:acuro/components/Common/CommonErrorWidget.dart';
 import 'package:acuro/components/Common/CustomTextField.dart';
+import 'package:acuro/components/Common/ErrorView.dart';
 import 'package:acuro/components/Login/CommonAuthHeader.dart';
 import 'package:acuro/core/navigator/AppRouter.gr.dart';
-import 'package:acuro/core/theme/AppColors.dart';
 import 'package:acuro/core/utils/AppUtils.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +20,7 @@ class TakeUserDetailsPage extends StatefulWidget {
 }
 
 class _TakeUserDetailsPageState extends State<TakeUserDetailsPage> {
+  final scrollController = ScrollController();
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
   bool hasError = false;
@@ -53,6 +54,9 @@ class _TakeUserDetailsPageState extends State<TakeUserDetailsPage> {
             firstName: firstNameController.text.trim(),
             lastName: lastNameController.text.trim()));
       } else {
+        if (!hasError) {
+          AppUtils.pageScrollUp(controller: scrollController, height: 100);
+        }
         hasError = true;
         errorsText = [
           appText.we_dont_allow_number,
@@ -66,6 +70,9 @@ class _TakeUserDetailsPageState extends State<TakeUserDetailsPage> {
   void checkNameChangedValidation(String text) {
     var appText = AppLocalizations.of(context)!;
     if (text.isNotEmpty && !isNameContainsOnlyCharacters(text)) {
+      if (!hasError) {
+        AppUtils.pageScrollUp(controller: scrollController, height: 50.h);
+      }
       hasError = true;
       errorsText = [
         appText.we_dont_allow_number,
@@ -86,33 +93,31 @@ class _TakeUserDetailsPageState extends State<TakeUserDetailsPage> {
         onTap: () {
           AppUtils.closeTheKeyboard(context);
         },
-        child: Scaffold(
-          backgroundColor: ColorConstants.white1,
-          body: CommonBackgroundView(
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height,
-              child: Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                            top: 90.h, bottom: 24.h, left: 20.w, right: 20.w),
-                        child: firstAndLastNameView(appText),
-                      ),
+        child: CommonBackgroundView(
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                          top: 90.h, bottom: 24.h, left: 20.w, right: 20.w),
+                      child: firstAndLastNameView(appText),
                     ),
                   ),
-                  // submit details button
-                  Padding(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 24.h, horizontal: 20.w),
-                    child: CommonButton(
-                        onTap: tapOnUserDetailsSubmit,
-                        isEnable: isNameValid(),
-                        buttonText: appText.continueText),
-                  )
-                ],
-              ),
+                ),
+                // submit details button
+                Padding(
+                  padding:
+                      EdgeInsets.symmetric(vertical: 24.h, horizontal: 20.w),
+                  child: CommonButton(
+                      onTap: tapOnUserDetailsSubmit,
+                      isEnable: isNameValid(),
+                      buttonText: appText.continueText),
+                )
+              ],
             ),
           ),
         ),
@@ -165,7 +170,7 @@ class _TakeUserDetailsPageState extends State<TakeUserDetailsPage> {
 
   Widget errorView(AppLocalizations appText) {
     return hasError
-        ? CommonErrorWidget(
+        ? MultipleErrorWidget(
             errors: errorsText,
           )
         : const SizedBox.shrink();

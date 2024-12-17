@@ -1,4 +1,8 @@
+
 import 'dart:async';
+import 'package:acuro/application/application/auth/bloc/AuthBloc.dart';
+import 'package:acuro/application/application/auth/bloc/AuthEvent.dart';
+import 'package:acuro/application/application/auth/bloc/AuthState.dart';
 import 'package:acuro/components/Common/AnimatedSwitcher.dart';
 import 'package:acuro/components/Common/CommonBackgroundView.dart';
 import 'package:acuro/components/Common/CommonButton.dart';
@@ -6,6 +10,7 @@ import 'package:acuro/components/Common/CommonSplashBackView.dart';
 import 'package:acuro/components/Common/CustomTextField.dart';
 import 'package:acuro/components/Login/CommonAuthHeader.dart';
 import 'package:acuro/components/Login/OTPView.dart';
+import 'package:acuro/core/constants/Constants.dart';
 import 'package:acuro/core/navigator/AppRouter.gr.dart';
 import 'package:acuro/core/persistence/PreferenceHelper.dart';
 import 'package:acuro/core/theme/AppColors.dart';
@@ -13,6 +18,7 @@ import 'package:acuro/core/utils/AppUtils.dart';
 import 'package:acuro/core/utils/TimeUtils.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../components/Common/CommonTextStyle.dart';
@@ -30,21 +36,30 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
   final pageController = PageController();
   final otpController = TextEditingController();
   int currentIndex = 0;
+  String verificationId = "";
+  String errorText = "";
   bool hasError = false;
   bool canResend = false;
-  int timeLeft = 30;
+  bool isLoading = false;
+  bool soManyAttempts = false;
+  int timeLeft = 60;
   Timer? _timer;
 
-  @override
-  void initState() {
-    super.initState();
+  void callSendEmailOtp() {
+    context.read<AuthBloc>().add(SendEmailOtpEvent(
+        email: emailController.text.trim(), isFromForgot: false));
+  }
+
+  void callVerifyEmailOtp() {
+    context.read<AuthBloc>().add(VerifyEmailOtpEvent(
+        verificationId: verificationId, code: otpController.text.trim()));
   }
 
   void startResendTimer() {
     _timer?.cancel();
     setState(() {
       canResend = false;
-      timeLeft = 30;
+      timeLeft = 60;
     });
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -64,27 +79,20 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
   void resendCode() {
     if (canResend) {
       startResendTimer();
+      callSendEmailOtp();
     }
   }
 
   void submitEmailFunc() {
     if (AppUtils.isEmailValid(emailController.text.trim())) {
-      pageController.nextPage(
-          duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
-      startResendTimer();
-      AppUtils.closeTheKeyboard(context);
+      callSendEmailOtp();
     }
   }
 
   void submitOtpFunc(AppLocalizations appText) {
     AppUtils.closeTheKeyboard(context);
-    if (otpController.text != "123456") {
-      setState(() {
-        hasError = true;
-      });
-    } else if (!hasError && otpController.text == "123456") {
-      context.router.push(const TakeUserDetailsRoute());
-      setUserEmail();
+    if (otpController.text.length == 6) {
+      callVerifyEmailOtp();
     }
   }
 
@@ -101,13 +109,43 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
   @override
   Widget build(BuildContext context) {
     var appText = AppLocalizations.of(context)!;
-    return GestureDetector(
-      onTap: () {
+    return BlocConsumer<AuthBloc, AuthState>(listener: (context, state) {
+      if (state is EmailAuthLoading) {
+        isLoading = true;
+      }
+      if (state is EmailAuthError) {
+        isLoading = false;
+        if (state.errorMessage == SO_MANY_ATTEMPT) {
+          _timer?.cancel();
+          canResend = false;
+          soManyAttempts = true;
+        } else if (!state.errorMessage.contains(BLOCKED)) {
+          hasError = true;
+          errorText = appText.code_you_have_entered_not_matched;
+        }
+      }
+      if (state is AuthEmailOtpSent) {
+        isLoading = false;
+        verificationId = state.verificationId;
+        startResendTimer();
         AppUtils.closeTheKeyboard(context);
-      },
-      child: Scaffold(
-        backgroundColor: ColorConstants.white1,
-        body: CommonBackgroundView(
+        if(currentIndex == 0){
+          pageController.nextPage(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut);
+        }
+      }
+      if (state is EmailAuthVerified) {
+        isLoading = false;
+        context.router.push(const TakeUserDetailsRoute());
+        setUserEmail();
+      }
+    }, builder: (context, state) {
+      return GestureDetector(
+        onTap: () {
+          AppUtils.closeTheKeyboard(context);
+        },
+        child: CommonBackgroundView(
           child: Padding(
             padding: EdgeInsets.only(
                 top: currentIndex == 0 ? 90.h : 60.h,
@@ -138,6 +176,9 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
                       physics: const NeverScrollableScrollPhysics(),
                       onPageChanged: (value) {
                         currentIndex = value;
+                        hasError = false;
+                        soManyAttempts = false;
+                        AppUtils.closeTheKeyboard(context);
                         setState(() {});
                       },
                       children: [
@@ -151,8 +192,8 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
             ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget emailView(AppLocalizations appText) {
@@ -173,14 +214,19 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
             keyboardType: TextInputType.emailAddress,
             textCapitalization: TextCapitalization.none,
             onChanged: (p0) {
+              soManyAttempts = false;
               setState(() {});
             },
           ),
+          //resend text and error widget
+          SizedBox(height: 16.h),
+          errorView(appText),
           const Spacer(),
           // email submit button
           CommonButton(
               onTap: submitEmailFunc,
               isEnable: AppUtils.isEmailValid(emailController.text.trim()),
+              isLoading: isLoading,
               buttonText: appText.get_verification_code)
         ],
       ),
@@ -208,10 +254,9 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
               setState(() {});
             },
           ),
-          // otp error view
+          //resend text and error widget
           errorView(appText),
           SizedBox(height: 16.h),
-          //resend text
           resendText(appText),
           const Spacer(),
           // submit button
@@ -220,6 +265,7 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
                 submitOtpFunc(appText);
               },
               isEnable: otpController.text.length == 6,
+              isLoading: isLoading,
               buttonText: appText.continueText)
         ],
       ),
@@ -227,28 +273,49 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
   }
 
   Widget errorView(AppLocalizations appText) {
-    return hasError
-        ? Text(
-            appText.code_you_have_entered_not_matched,
-            style: textWith16W400(ColorConstants.red),
-          )
-        : const SizedBox.shrink();
+    return soManyAttempts && currentIndex == 0
+        ? hourLimitationWidget(appText)
+        : hasError
+            ? Text(
+                errorText,
+                style: textWith16W400(ColorConstants.red),
+              )
+            : const SizedBox.shrink();
   }
 
   Widget resendText(AppLocalizations appText) {
-    return canResend
-        ? InkWell(
-            onTap: () {
-              resendCode();
-            },
-            child: Text(
-              appText.resend_code,
-              style: textWith16W500(ColorConstants.blue),
-            ),
-          )
-        : Text(
-            "${appText.resend_code_in}${TimeUtils.otpTime(timeLeft)}",
-            style: textWith16W400(Theme.of(context).focusColor),
-          );
+    return soManyAttempts
+        ? hourLimitationWidget(appText)
+        : canResend
+            ? InkWell(
+                onTap: () {
+                  resendCode();
+                },
+                child: Text(
+                  appText.resend_code,
+                  style: textWith16W500(ColorConstants.blue),
+                ),
+              )
+            : Text(
+                "${appText.resend_code_in}${TimeUtils.otpTime(timeLeft)}",
+                style: textWith16W400(Theme.of(context).focusColor),
+              );
+  }
+
+  Widget hourLimitationWidget(AppLocalizations appText) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 5.w),
+      decoration: BoxDecoration(
+        color: ColorConstants.red.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(15.r),
+        border: Border.all(width: 1.w, color: ColorConstants.red),
+      ),
+      child: Text(
+        appText.exceed_the_attempts_try_again_after_eight_hour,
+        textAlign: TextAlign.center,
+        style: textWith14W500(Theme.of(context).focusColor),
+      ),
+    );
   }
 }

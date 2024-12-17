@@ -9,21 +9,24 @@ class CommonBackgroundView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Theme.of(context).shadowColor,
-            Theme.of(context).primaryColor,
-            Theme.of(context).primaryColor,
-          ],
-          stops: const [0.0, 0.2, 1.0],
+    return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
+      body: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Theme.of(context).shadowColor,
+              Theme.of(context).primaryColor,
+              Theme.of(context).primaryColor,
+            ],
+            stops: const [0.0, 0.2, 1.0],
+          ),
         ),
+        child: child,
       ),
-      child: child,
     );
   }
 }

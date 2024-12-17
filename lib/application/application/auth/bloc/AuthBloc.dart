@@ -18,6 +18,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SendOtpEvent>(_sendOtp);
     on<VerifyOtpEvent>(_verifyOtp);
     on<ResendOtpEvent>(_resendOtpEvent);
+    on<SendEmailOtpEvent>(_sendEmailOtpEvent);
+    on<VerifyEmailOtpEvent>(_verifyEmailOtpEvent);
+    // on<ResendEmailOtpEvent>(_resendEmailOtpEvent);
     on<EmailAuthSignUpEvent>(_emailLoginEvent);
     on<LoginAuthEvent>(_loginAuthEvent);
     on<GetAllUsers>(_getAllUsers);
@@ -65,24 +68,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _verifyOtp(VerifyOtpEvent event, Emitter<AuthState> emit) async {
-    print("_____________ 2");
     emit(AuthVerifyLoading());
     try {
-      print("_____________ 3");
       UserCredential? userCredential = await authRepository.verifyOtp(
         verificationId: event.verificationId,
         smsCode: event.smsCode,
       );
-      print("_____________ 4");
       if (userCredential != null) {
         emit(AuthVerified(userCredential: userCredential));
       } else {
-        print("_____________ 5");
         emit(const AuthVerifyError(errorMessage: ""));
       }
     } on FirebaseAuthException catch (e) {
-      print("_____________ 6");
-      emit(AuthVerifyError(errorMessage: ToastUtils.getAuthMessage(e.toString())));
+      emit(AuthVerifyError(
+          errorMessage: ToastUtils.getAuthMessage(e.toString())));
     }
   }
 
@@ -115,6 +114,91 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           errorMessage: ToastUtils.getAuthMessage(e.toString())));
     }
   }
+
+  Future<void> _sendEmailOtpEvent(
+      SendEmailOtpEvent event, Emitter<AuthState> emit) async {
+    try {
+      emit(EmailAuthLoading());
+      String varId = "";
+      if (event.isFromForgot) {
+        bool isUserExists = await authRepository.userExistsOnDatabase(
+            authValue: event.email, isMobile: false);
+        if (!isUserExists) {
+          emit(const EmailAuthError(errorMessage: EMAIL_NOT_REGISTER));
+          return;
+        }
+      }
+      int otpAttempt = await authRepository.getOtpValidation(
+          authValue: event.email,
+          otpFrom: event.isFromForgot ? FORGOTEMAIL : EMAILAUTH,
+          isMobile: false);
+
+      if (otpAttempt > 5) {
+        emit(AuthInitial());
+        emit(const EmailAuthError(errorMessage: SO_MANY_ATTEMPT));
+        return;
+      }
+
+      varId = await authRepository.sendEmailOtp(email: event.email);
+
+      await authRepository.setOtpValidation(
+          authValue: event.email,
+          otpFrom: event.isFromForgot ? FORGOTEMAIL : EMAILAUTH,
+          isMobile: false);
+
+      emit(AuthEmailOtpSent(verificationId: varId));
+    } on FirebaseAuthException catch (e) {
+      emit(EmailAuthError(errorMessage: ToastUtils.getAuthMessage(e.toString())));
+    } catch (e) {
+      emit(EmailAuthError(errorMessage: ToastUtils.getAuthMessage(e.toString())));
+    }
+  }
+
+  Future<void> _verifyEmailOtpEvent(
+      VerifyEmailOtpEvent event, Emitter<AuthState> emit) async {
+    emit(EmailAuthLoading());
+    try {
+      bool isVerified = await authRepository.verifyEmailOtp(
+        verificationId: event.verificationId,
+        code: event.code,
+      );
+      if (isVerified) {
+        emit(EmailAuthVerified());
+      } else {
+        emit(const EmailAuthError(errorMessage: ""));
+      }
+    } catch (e) {
+      emit(EmailAuthError(
+          errorMessage: ToastUtils.getAuthMessage(e.toString())));
+    }
+  }
+
+  // Future<void> _resendEmailOtpEvent(
+  //     ResendEmailOtpEvent event, Emitter<AuthState> emit) async {
+  //   try {
+  //     int otpAttempt = await authRepository.getOtpValidation(
+  //         authValue: event.email,
+  //         otpFrom: event.isFromForgot ? FORGOTEMAIL : EMAILAUTH,
+  //         isMobile: false);
+  //
+  //     if (otpAttempt > 5) {
+  //       emit(AuthInitial());
+  //       emit(const EmailAuthError(errorMessage: SO_MANY_ATTEMPT));
+  //       return;
+  //     }
+  //
+  //     String varId = await authRepository.sendEmailOtp(email: event.email);
+  //
+  //     await authRepository.setOtpValidation(
+  //         authValue: event.email,
+  //         otpFrom: event.isFromForgot ? FORGOTEMAIL : EMAILAUTH,
+  //         isMobile: false);
+  //
+  //     emit(AuthEmailOtpSent(verificationId: varId));
+  //   } catch (e) {
+  //     emit(EmailAuthError(errorMessage: ToastUtils.getAuthMessage(e.toString())));
+  //   }
+  // }
 
   Future<void> _emailLoginEvent(
       EmailAuthSignUpEvent event, Emitter<AuthState> emit) async {
@@ -156,6 +240,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       String email = event.loginType == LoginType.signInWithPhone
           ? await getEmailFromUserData(event.emailOrPhone, true)
           : event.emailOrPhone;
+
+      print("_______________");
+      print(email);
+      print(event.emailOrPhone);
+      print(event.password);
 
       if (email.isEmpty) {
         emit(const LoginAuthError(errorMessage: SOMETHING_WANT_WRONG));

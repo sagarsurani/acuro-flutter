@@ -1,3 +1,4 @@
+
 import 'package:acuro/application/application/auth/bloc/AuthBloc.dart';
 import 'package:acuro/application/application/auth/bloc/AuthEvent.dart';
 import 'package:acuro/application/application/auth/bloc/AuthState.dart';
@@ -62,17 +63,25 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
     );
   }
 
+  void callApiForEmailOtp() {
+    getIt<AuthBloc>().add(
+      SendEmailOtpEvent(email: emailController.text.trim(), isFromForgot: true),
+    );
+  }
+
   void onTabChanged(int index) {
     setState(() {
       currentIndex = index;
       hasError = false;
+      isTooManyAttempt = false;
+      AppUtils.closeTheKeyboard(context);
     });
   }
 
   bool isButtonEnabled() {
     return currentIndex == 0
         ? AppUtils.isEmailValid(emailController.text.trim())
-        : phoneController.text.trim().length == 10;
+        : phoneController.text.trim().length == EnvVariable.maxNumber;
   }
 
   void navigateToOtpPage({required String verificationId}) {
@@ -85,22 +94,33 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
             : "$countryCode ${phoneController.text}"));
   }
 
+  void stateError(String error) {
+    isLoading = false;
+    hasError = true;
+    errorText = error;
+    if (errorText == SO_MANY_ATTEMPT) {
+      isTooManyAttempt = true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var appText = AppLocalizations.of(context)!;
     return BlocConsumer<AuthBloc, AuthState>(listener: (context, state) {
-      if (state is AuthLoading) {
+      if (state is AuthLoading || state is EmailAuthLoading) {
         isLoading = true;
       }
       if (state is AuthError) {
-        isLoading = false;
-        hasError = true;
-        errorText = state.errorMessage;
-        if (state.errorMessage == SO_MANY_ATTEMPT) {
-          isTooManyAttempt = true;
-        }
+        stateError(state.errorMessage);
+      }
+      if (state is EmailAuthError) {
+        stateError(state.errorMessage);
       }
       if (state is AuthOtpSent) {
+        isLoading = false;
+        navigateToOtpPage(verificationId: state.verificationId);
+      }
+      if (state is AuthEmailOtpSent) {
         isLoading = false;
         navigateToOtpPage(verificationId: state.verificationId);
       }
@@ -109,54 +129,54 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
         onTap: () {
           AppUtils.closeTheKeyboard(context);
         },
-        child: Scaffold(
-          backgroundColor: ColorConstants.white1,
-          body: CommonBackgroundView(
-            child: Padding(
-              padding: EdgeInsets.only(
-                  top: 60.h, bottom: 24.h, left: 20.w, right: 20.w),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // back view
-                  CommonBackView(
+        child: CommonBackgroundView(
+          child: Padding(
+            padding: EdgeInsets.only(
+                top: 60.h, bottom: 24.h, left: 20.w, right: 20.w),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // back view
+                CommonBackView(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                SizedBox(height: 14.h),
+                // content view
+                Text(
+                  appText.forgot_password,
+                  textAlign: TextAlign.center,
+                  style: textWith24W500(Theme.of(context).focusColor),
+                ),
+                SizedBox(height: 12.h),
+                CommonTabHeaderView(
+                    tabsList: tabsList,
+                    controller: tabController,
+                    currentIndex: currentIndex,
+                    onTabChanged: onTabChanged),
+                SizedBox(height: 24.h),
+
+                // content view
+                contentView(),
+
+                // button
+                CommonButton(
                     onTap: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                  SizedBox(height: 14.h),
-                  // content view
-                  Text(
-                    appText.forgot_password,
-                    textAlign: TextAlign.center,
-                    style: textWith24W500(Theme.of(context).focusColor),
-                  ),
-                  SizedBox(height: 12.h),
-                  CommonTabHeaderView(
-                      tabsList: tabsList,
-                      controller: tabController,
-                      currentIndex: currentIndex,
-                      onTabChanged: onTabChanged),
-                  SizedBox(height: 24.h),
-
-                  // content view
-                  contentView(),
-
-                  // button
-                  CommonButton(
-                      onTap: () {
-                        if (isButtonEnabled()) {
+                      if (isButtonEnabled()) {
+                        if (currentIndex == 0) {
+                          callApiForEmailOtp();
+                        } else {
                           callApiForSentOtp();
-                          // getIt<AuthBloc>().add(GetAllUsers());
                         }
-                      },
-                      isEnable: isButtonEnabled(),
-                      isLoading: isLoading,
-                      buttonText: appText.sent_reset_code)
-                  // button
-                ],
-              ),
+                      }
+                    },
+                    isEnable: isButtonEnabled(),
+                    isLoading: isLoading,
+                    buttonText: appText.sent_reset_code)
+                // button
+              ],
             ),
           ),
         ),
@@ -232,11 +252,15 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
                 controller: phoneController,
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
-                inputFormatters: AppUtils.onlyDigitsFormatter(EnvVariable.maxNumber),
+                inputFormatters:
+                    AppUtils.onlyDigitsFormatter(EnvVariable.maxNumber),
                 onChanged: (p0) {
                   hasError = false;
                   isTooManyAttempt = false;
                   setState(() {});
+                  if (p0.trim().length == EnvVariable.maxNumber) {
+                    AppUtils.closeTheKeyboard(context);
+                  }
                 },
               )),
               SizedBox(

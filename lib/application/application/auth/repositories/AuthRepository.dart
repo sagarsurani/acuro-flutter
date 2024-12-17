@@ -1,3 +1,4 @@
+
 import 'package:acuro/models/Auth/OtpLimitationModel.dart';
 import 'package:acuro/models/Auth/UserModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,6 +11,15 @@ abstract class AuthRepository {
   Future<UserCredential?> verifyOtp({
     required String verificationId,
     required String smsCode,
+  });
+
+  Future<String> sendEmailOtp({
+    required String email,
+  });
+
+  Future<bool> verifyEmailOtp({
+    required String verificationId,
+    required String code,
   });
 
   Future<UserCredential?> signInWithEmail(

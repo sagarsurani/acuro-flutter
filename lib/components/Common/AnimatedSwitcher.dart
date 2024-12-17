@@ -1,49 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-class AnimatedView extends StatefulWidget {
-  final Widget child;
-  final Duration? duration;
-  const AnimatedView({super.key, required this.child, this.duration});
+// common class for make a smooth effect
 
-  @override
-  State<AnimatedView> createState() => _AnimatedViewState();
-}
-
-class _AnimatedViewState extends State<AnimatedView> {
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedSwitcher(
-      duration: widget.duration ?? const Duration(milliseconds: 600),
-      switchInCurve: Curves.easeInOutQuad,
-      switchOutCurve: Curves.easeIn,
-      layoutBuilder: (Widget? currentChild, List<Widget> previousChildren) {
-        return Stack(
-          alignment: Alignment.topLeft,
-          children: <Widget>[
-            ...previousChildren,
-            if (currentChild != null) currentChild,
-          ],
-        );
-      },
-      child: widget.child,
-    );
-  }
-}
-
-class SmootherView extends StatefulWidget {
+class SmootherView extends StatelessWidget {
   final Widget child;
   const SmootherView({super.key, required this.child});
 
   @override
-  State<SmootherView> createState() => _SmootherViewState();
-}
-
-class _SmootherViewState extends State<SmootherView> {
-  @override
   Widget build(BuildContext context) {
-    return widget.child.animate().fadeIn(delay: 50.ms, duration: 400.ms);
-    ;
+    return child.animate().fadeIn(delay: 50.ms, duration: 400.ms);
   }
 }
 
@@ -105,5 +71,24 @@ class _SmoothViewState extends State<SmoothView>
       },
       child: widget.child,
     );
+  }
+}
+
+// made drop down effect
+
+class DropDownEffect extends StatelessWidget {
+  final Widget child;
+  const DropDownEffect({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return child
+        .animate()
+        .slideY(
+            begin: -0.2,
+            end: 0.0,
+            duration: 300.ms,
+            curve: Curves.easeOut)
+        .fadeIn(duration: 1000.ms);
   }
 }

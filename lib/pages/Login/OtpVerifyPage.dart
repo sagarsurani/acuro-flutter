@@ -7,6 +7,7 @@ import 'package:acuro/components/Common/CommonBackgroundView.dart';
 import 'package:acuro/components/Common/CommonButton.dart';
 import 'package:acuro/components/Common/CommonSplashBackView.dart';
 import 'package:acuro/components/Common/CommonTextStyle.dart';
+import 'package:acuro/components/Common/ErrorView.dart';
 import 'package:acuro/components/Login/CommonAuthHeader.dart';
 import 'package:acuro/components/Login/OTPView.dart';
 import 'package:acuro/core/constants/Constants.dart';
@@ -42,7 +43,7 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
   bool canResend = false;
   String verificationId = "";
   int timeLeft = 60;
-  int resendOtpValidation = 0;
+  bool soManyAttempts = false;
   Timer? _timer;
 
   @override
@@ -109,7 +110,7 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
         if (state.errorMessage == SO_MANY_ATTEMPT) {
           _timer?.cancel();
           canResend = false;
-          resendOtpValidation = 6;
+          soManyAttempts = true;
         } else if (!state.errorMessage.contains(BLOCKED)) {
           hasError = true;
           errorText = appText.code_you_have_entered_not_matched;
@@ -128,49 +129,47 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
         onTap: () {
           AppUtils.closeTheKeyboard(context);
         },
-        child: Scaffold(
-          body: CommonBackgroundView(
-            child: Padding(
-              padding: EdgeInsets.only(
-                  top: 60.h, bottom: 24.h, left: 20.w, right: 20.w),
-              child: SmoothView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // back view
-                    CommonBackView(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                    SizedBox(height: 14.h),
-                    // headerView
-                    headerView(appText),
-                    SizedBox(height: 32.h),
-                    // otp View
-                    OtpView(
-                      controller: otpController,
-                      hasError: hasError,
-                      onChanged: (p0) {
-                        hasError = false;
-                        setState(() {});
-                      },
-                    ),
-                    // otp error view
-                    errorView(),
-                    SizedBox(height: 16.h),
-                    //resend text
-                    resendText(appText),
-                    const Spacer(),
-                    // submit button
-                    CommonButton(
-                        onTap: callApiForSentOtp,
-                        isLoading: isLoading,
-                        isEnable: otpController.text.length == 6,
-                        buttonText: appText.continueText)
-                  ],
-                ),
+        child: CommonBackgroundView(
+          child: Padding(
+            padding: EdgeInsets.only(
+                top: 60.h, bottom: 24.h, left: 20.w, right: 20.w),
+            child: SmoothView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // back view
+                  CommonBackView(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  SizedBox(height: 14.h),
+                  // headerView
+                  headerView(appText),
+                  SizedBox(height: 32.h),
+                  // otp View
+                  OtpView(
+                    controller: otpController,
+                    hasError: hasError,
+                    onChanged: (p0) {
+                      hasError = false;
+                      setState(() {});
+                    },
+                  ),
+                  // otp error view
+                  AuthErrorView(isError: hasError,errorText: errorText),
+                  SizedBox(height: 16.h),
+                  //resend text
+                  resendText(appText),
+                  const Spacer(),
+                  // submit button
+                  CommonButton(
+                      onTap: callApiForSentOtp,
+                      isLoading: isLoading,
+                      isEnable: otpController.text.length == 6,
+                      buttonText: appText.continueText)
+                ],
               ),
             ),
           ),
@@ -187,17 +186,8 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
     );
   }
 
-  Widget errorView() {
-    return hasError
-        ? Text(
-            errorText,
-            style: textWith16W400(ColorConstants.red),
-          )
-        : const SizedBox.shrink();
-  }
-
   Widget resendText(AppLocalizations appText) {
-    return resendOtpValidation > 5
+    return soManyAttempts
         ? Container(
             width: double.infinity,
             padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 5.w),

@@ -34,54 +34,52 @@ class _GetStartedPageState extends State<GetStartedPage> {
   @override
   Widget build(BuildContext context) {
     var appText = AppLocalizations.of(context)!;
-    return Scaffold(
-      body: CommonSplashBackView(
-        child: Padding(
-          padding: EdgeInsets.only(top: 100.h, bottom: 48.h),
-          child: SmoothView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SvgPicture.asset(ImageConstants.icAppLogo,
-                          height: 49.h, width: 64.w),
-                      SizedBox(height: 79.h),
-                      Text(appText.predict,
-                          style: textWith40W500WithGradient([
-                            ColorConstants.blueShader,
-                            ColorConstants.blueLight
-                          ])),
-                      Text(appText.with_confidence,
-                          style: textWith40W700(Theme.of(context).cardColor))
-                    ],
-                  ),
+    return CommonSplashBackView(
+      child: Padding(
+        padding: EdgeInsets.only(top: 100.h, bottom: 48.h),
+        child: SmootherView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SvgPicture.asset(ImageConstants.icAppLogo,
+                        height: 49.h, width: 64.w),
+                    SizedBox(height: 79.h),
+                    Text(appText.predict,
+                        style: textWith40W500WithGradient([
+                          ColorConstants.blueShader,
+                          ColorConstants.blueLight
+                        ])),
+                    Text(appText.with_confidence,
+                        style: textWith40W700(Theme.of(context).cardColor))
+                  ],
                 ),
-                SizedBox(height: 37.h),
-                Image.asset(
-                    AppUtils.isDarkTheme(context)
-                        ? ImageConstants.imgGraphDark
-                        : ImageConstants.imgGraph,
-                    height: 252.h),
-                const Spacer(),
-                CommonButton(
-                    onTap: navigateToRegistrationRoute,
-                    buttonText: appText.get_started,
-                    margin: EdgeInsets.symmetric(horizontal: 20.w)),
-                SizedBox(height: 12.h),
-                CommonButton(
-                    onTap: navigateToLoginRoute,
-                    buttonText: appText.log_in,
-                    backGroundColor: ColorConstants.blueLight01,
-                    textStyle: textWith16W700(ColorConstants.blue),
-                    margin: EdgeInsets.symmetric(horizontal: 20.w))
-              ],
-            ),
+              ),
+              SizedBox(height: 37.h),
+              Image.asset(
+                  AppUtils.isDarkTheme(context)
+                      ? ImageConstants.imgGraphDark
+                      : ImageConstants.imgGraph,
+                  height: 252.h),
+              const Spacer(),
+              CommonButton(
+                  onTap: navigateToRegistrationRoute,
+                  buttonText: appText.get_started,
+                  margin: EdgeInsets.symmetric(horizontal: 20.w)),
+              SizedBox(height: 12.h),
+              CommonButton(
+                  onTap: navigateToLoginRoute,
+                  buttonText: appText.log_in,
+                  backGroundColor: ColorConstants.blueLight01,
+                  textStyle: textWith16W700(ColorConstants.blue),
+                  margin: EdgeInsets.symmetric(horizontal: 20.w))
+            ],
           ),
         ),
       ),

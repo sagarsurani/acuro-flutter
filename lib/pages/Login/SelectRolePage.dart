@@ -60,35 +60,32 @@ class _SelectRolePageState extends State<SelectRolePage> {
   @override
   Widget build(BuildContext context) {
     var appText = AppLocalizations.of(context)!;
-    return Scaffold(
-      backgroundColor: ColorConstants.white1,
-      body: CommonBackgroundView(
-        child: Padding(
-          padding:
-              EdgeInsets.only(top: 90.h, bottom: 24.h, left: 20.w, right: 20.w),
-          child: SmoothView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 14.h),
-                // content view
-                CommonAuthHeader(
-                    headerText: appText.select_your_role,
-                    bodyText: appText.choose_how_you_primarily_interact),
-                SizedBox(height: 32.h),
+    return CommonBackgroundView(
+      child: Padding(
+        padding:
+            EdgeInsets.only(top: 90.h, bottom: 24.h, left: 20.w, right: 20.w),
+        child: SmoothView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 14.h),
+              // content view
+              CommonAuthHeader(
+                  headerText: appText.select_your_role,
+                  bodyText: appText.choose_how_you_primarily_interact),
+              SizedBox(height: 32.h),
 
-                // content view
-                selectRoleView(),
+              // content view
+              selectRoleView(),
 
-                // submit button
-                CommonButton(
-                    onTap: () {
-                      context.router.push(const SelectCommodityRoute());
-                    },
-                    buttonText: appText.continueText)
-              ],
-            ),
+              // submit button
+              CommonButton(
+                  onTap: () {
+                    context.router.push(const SelectCommodityRoute());
+                  },
+                  buttonText: appText.continueText)
+            ],
           ),
         ),
       ),

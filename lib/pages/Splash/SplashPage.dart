@@ -1,3 +1,4 @@
+import 'package:acuro/components/Common/AnimatedSwitcher.dart';
 import 'package:acuro/components/Common/CommonSplashBackView.dart';
 import 'package:acuro/core/constants/ImageConstants.dart';
 import 'package:acuro/core/navigator/AppRouter.gr.dart';
@@ -52,9 +53,9 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: CommonSplashBackView(
-        child: Center(
+    return CommonSplashBackView(
+      child: Center(
+        child: SmootherView(
           child: SvgPicture.asset(
             ImageConstants.icAppLogo,
           ),

@@ -1,4 +1,4 @@
-import 'package:acuro/core/constants/Constants.dart';
+
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -11,13 +11,16 @@ abstract class AuthState extends Equatable {
 
 class AuthInitial extends AuthState {}
 
+
+// 1
+
 class AuthLoading extends AuthState {}
 
-class AuthVerifyLoading extends AuthState {}
+class AuthError extends AuthState {
+  final String errorMessage;
 
-class LoginAuthLoading extends AuthState {}
-
-class ResetAuthLoading extends AuthState {}
+  const AuthError({required this.errorMessage});
+}
 
 class AuthOtpSent extends AuthState {
   final String verificationId;
@@ -25,10 +28,15 @@ class AuthOtpSent extends AuthState {
   const AuthOtpSent({required this.verificationId});
 }
 
-class ResendOtpSend extends AuthState {
-  final String verificationId;
 
-  const ResendOtpSend({required this.verificationId});
+//2
+
+class AuthVerifyLoading extends AuthState {}
+
+class AuthVerifyError extends AuthState {
+  final String errorMessage;
+
+  const AuthVerifyError({required this.errorMessage});
 }
 
 class AuthVerified extends AuthState {
@@ -37,28 +45,22 @@ class AuthVerified extends AuthState {
   const AuthVerified({this.userCredential});
 }
 
-class AuthVerifyError extends AuthState {
-  final String errorMessage;
+class ResendOtpSend extends AuthState {
+  final String verificationId;
 
-  const AuthVerifyError({required this.errorMessage});
+  const ResendOtpSend({required this.verificationId});
 }
+
+
+//3
+
+class LoginAuthLoading extends AuthState {}
+
 
 class LoginAuthError extends AuthState {
   final String errorMessage;
 
   const LoginAuthError({required this.errorMessage});
-}
-
-class AuthError extends AuthState {
-  final String errorMessage;
-
-  const AuthError({required this.errorMessage});
-}
-
-class EmailAuthDone extends AuthState {
-  final UserCredential? userCredential;
-
-  const EmailAuthDone({this.userCredential});
 }
 
 class LoginAuthDone extends AuthState {
@@ -67,13 +69,37 @@ class LoginAuthDone extends AuthState {
   const LoginAuthDone({this.userCredential});
 }
 
-class OtpValidationDone extends AuthState {
-  final int otpValidation;
+class EmailAuthDone extends AuthState {
+  final UserCredential? userCredential;
 
-  const OtpValidationDone({required this.otpValidation});
+  const EmailAuthDone({this.userCredential});
 }
 
-class SetOtpValidationDone extends AuthState {}
+
+//4
+
+class EmailAuthLoading extends AuthState {}
+
+class EmailAuthError extends AuthState {
+  final String errorMessage;
+
+  const EmailAuthError({required this.errorMessage});
+}
+
+class AuthEmailOtpSent extends AuthState {
+  final String verificationId;
+
+  const AuthEmailOtpSent({required this.verificationId});
+}
+
+class EmailAuthVerified extends AuthState {
+  // final UserCredential? userCredential;
+  //
+  // const EmailAuthVerified({this.userCredential});
+}
+
+// 5
+class ResetAuthLoading extends AuthState {}
 
 class ResetPasswordError extends AuthState {
   final String errorMessage;
@@ -82,3 +108,9 @@ class ResetPasswordError extends AuthState {
 }
 
 class ResetPasswordDone extends AuthState {}
+
+
+
+
+
+

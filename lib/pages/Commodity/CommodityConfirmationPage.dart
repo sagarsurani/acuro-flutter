@@ -3,10 +3,12 @@ import 'package:acuro/components/Common/CommonButton.dart';
 import 'package:acuro/components/Common/CommonTextStyle.dart';
 import 'package:acuro/core/constants/Constants.dart';
 import 'package:acuro/core/constants/ImageConstants.dart';
+import 'package:acuro/core/navigator/AppRouter.gr.dart';
 import 'package:acuro/core/theme/AppColors.dart';
 import 'package:acuro/core/utils/AppUtils.dart';
 import 'package:acuro/models/Model.dart';
 import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -27,27 +29,36 @@ class _CommodityConfirmationPageState extends State<CommodityConfirmationPage> {
   String userName = "Steve";
 
   List<MarketModel> combineMarketList(CommodityModel commodity) {
-    return commodity.spotMarket + commodity.futureMarket;
+    return [...commodity.spotMarket, ...commodity.futureMarket]
+        .where((market) => market.isSelected)
+        .toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: CommonBackgroundView(
+    return CommonBackgroundView(
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height,
         child: Padding(
-          padding:
-              EdgeInsets.only(top: 80.h, bottom: 24.h, left: 20.w, right: 20.w),
+          padding: EdgeInsets.only(
+              bottom: 24.h, left: 20.w, right: 20.w),
           child: Stack(
-            alignment: Alignment.bottomCenter,
+            alignment: Alignment.topCenter,
             children: [
-              Column(
-                children: [
-                  headerView(),
-                  verifyTitle(),
-                  viewSelectedCommodityWidget(),
-                ],
+              SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    headerView(),
+                    verifyTitle(),
+                    viewSelectedCommodityWidget(),
+                  ],
+                ),
               ),
-              button()
+              Positioned(bottom: 1.h, left: 1.h, right: 1.w, child: button())
             ],
           ),
         ),
@@ -61,6 +72,7 @@ class _CommodityConfirmationPageState extends State<CommodityConfirmationPage> {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        SizedBox(height: 80.h),
         if (commodityStatus == CommodityStatus.confirm) ...[
           Image.asset(
               AppUtils.isDarkTheme(context)
@@ -69,9 +81,12 @@ class _CommodityConfirmationPageState extends State<CommodityConfirmationPage> {
               height: 138.r,
               width: 138.r)
         ] else ...[
-          Image.asset(AppUtils.isDarkTheme(context)
-              ? ImageConstants.imgVerifyingDark
-              : ImageConstants.imgVerifying, height: 138.r, width: 138.r)
+          Image.asset(
+              AppUtils.isDarkTheme(context)
+                  ? ImageConstants.imgVerifyingDark
+                  : ImageConstants.imgVerifying,
+              height: 138.r,
+              width: 138.r)
         ],
         SizedBox(height: 12.h),
         SizedBox(
@@ -160,6 +175,7 @@ class _CommodityConfirmationPageState extends State<CommodityConfirmationPage> {
         ),
         SizedBox(height: 21.h),
         Container(
+          margin: EdgeInsets.only(bottom: 60.h),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15.r),
               border: Border.all(
@@ -167,6 +183,7 @@ class _CommodityConfirmationPageState extends State<CommodityConfirmationPage> {
           child: ListView.separated(
             padding: EdgeInsets.zero,
             shrinkWrap: true,
+            physics: const ClampingScrollPhysics(),
             itemCount: widget.selectedCommodityList.length,
             itemBuilder: (context, index) {
               String commodity = widget.selectedCommodityList[index].name;
@@ -242,6 +259,8 @@ class _CommodityConfirmationPageState extends State<CommodityConfirmationPage> {
                   setState(() {});
                 },
               );
+            } else {
+              context.router.popUntilRouteWithName(SelectRoleRoute.name);
             }
           },
           buttonText:

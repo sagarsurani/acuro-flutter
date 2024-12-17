@@ -1,20 +1,19 @@
+
 import 'package:acuro/application/application/auth/bloc/AuthBloc.dart';
 import 'package:acuro/application/application/auth/bloc/AuthEvent.dart';
 import 'package:acuro/application/application/auth/bloc/AuthState.dart';
 import 'package:acuro/components/Common/AnimatedSwitcher.dart';
 import 'package:acuro/components/Common/CommonBackgroundView.dart';
 import 'package:acuro/components/Common/CommonButton.dart';
-import 'package:acuro/components/Common/CommonErrorWidget.dart';
 import 'package:acuro/components/Common/CommonSplashBackView.dart';
 import 'package:acuro/components/Common/CommonTextStyle.dart';
 import 'package:acuro/components/Common/CustomTextField.dart';
+import 'package:acuro/components/Common/ErrorView.dart';
 import 'package:acuro/components/Login/CommonAuthHeader.dart';
-import 'package:acuro/core/constants/Constants.dart';
 import 'package:acuro/core/constants/ImageConstants.dart';
 import 'package:acuro/core/di/Injectable.dart';
 import 'package:acuro/core/navigator/AppRouter.gr.dart';
 import 'package:acuro/core/persistence/PreferenceHelper.dart';
-import 'package:acuro/core/theme/AppColors.dart';
 import 'package:acuro/core/utils/AppUtils.dart';
 import 'package:acuro/models/Auth/UserModel.dart';
 import 'package:auto_route/annotations.dart';
@@ -22,7 +21,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 @RoutePage()
@@ -37,6 +35,7 @@ class CreatePasswordPage extends StatefulWidget {
 }
 
 class _CreatePasswordPageState extends State<CreatePasswordPage> {
+  final scrollController = ScrollController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   bool isPasswordVisible = false;
@@ -83,6 +82,9 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
   void checkPasswordChangedValidation(String text) {
     var appText = AppLocalizations.of(context)!;
     if (text.isNotEmpty && !AppUtils.isPasswordValid(text)) {
+      if (!hasError) {
+        AppUtils.pageScrollUp(controller: scrollController, height: 100);
+      }
       hasError = true;
       errorsText = [
         appText.minimum_length_should_be_eight,
@@ -132,49 +134,49 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
         onTap: () {
           AppUtils.closeTheKeyboard(context);
         },
-        child: Scaffold(
-          body: CommonBackgroundView(
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height,
-              child: Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                            top: 60.h, bottom: 24.h, left: 20.w, right: 20.w),
-                        child: SmoothView(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // back view
-                              CommonBackView(
-                                onTap: () {
-                                  Navigator.pop(context);
-                                },
-                              ),
-                              SizedBox(height: 14.h),
-                              // content view
-                              setYourPasswordView(appText),
-                            ],
-                          ),
+        child: CommonBackgroundView(
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    physics: const ClampingScrollPhysics(),
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                          top: 60.h, bottom: 24.h, left: 20.w, right: 20.w),
+                      child: SmoothView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // back view
+                            CommonBackView(
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                            SizedBox(height: 14.h),
+                            // content view
+                            setYourPasswordView(appText),
+                          ],
                         ),
                       ),
                     ),
                   ),
-                  // submit button
-                  Padding(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 24.h, horizontal: 20.w),
-                    child: CommonButton(
-                        onTap: tapOnSubmitPassword,
-                        isEnable: isBothPasswordMatched(),
-                        isLoading: isLoading,
-                        buttonText: appText.continueText),
-                  )
-                ],
-              ),
+                ),
+                // submit button
+                Padding(
+                  padding:
+                      EdgeInsets.symmetric(vertical: 24.h, horizontal: 20.w),
+                  child: CommonButton(
+                      onTap: tapOnSubmitPassword,
+                      isEnable: isBothPasswordMatched(),
+                      isLoading: isLoading,
+                      buttonText: appText.continueText),
+                )
+              ],
             ),
           ),
         ),
@@ -240,7 +242,6 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
           SizedBox(height: 12.h),
           // error view
           errorView(appText),
-          // if (!hasError) const Spacer(),
         ],
       ),
     );
@@ -248,7 +249,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
 
   Widget errorView(AppLocalizations appText) {
     return hasError
-        ? CommonErrorWidget(
+        ? MultipleErrorWidget(
             errors: errorsText,
           )
         : const SizedBox.shrink();

@@ -1,4 +1,5 @@
 
+import 'dart:async';
 import 'package:acuro/application/application/auth/repositories/AuthRepository.dart';
 import 'package:acuro/core/constants/Constants.dart';
 import 'package:acuro/core/constants/EnvVariable.dart';
@@ -24,10 +25,6 @@ class AuthRepositoryImpl extends AuthRepository {
 
   CollectionReference otpValidationCollection() {
     return fireStore.collection(EnvVariable.otpCollection);
-  }
-
-  String resetPasswordUrl() {
-    return "https://us-central1-acuro-app-qa.cloudfunctions.net/updatePassword";
   }
 
   @override
@@ -77,6 +74,23 @@ class AuthRepositoryImpl extends AuthRepository {
   }
 
   @override
+  Future<String> sendEmailOtp({required String email}) async {
+    // static return way
+    return "12345678901234567890";
+  }
+
+  @override
+  Future<bool> verifyEmailOtp(
+      {required String verificationId, required String code}) async {
+    // static return way
+    if (verificationId == "12345678901234567890" && code == "123456") {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @override
   Future<bool> userExistsOnDatabase({
     required String authValue,
     required bool isMobile,
@@ -87,11 +101,15 @@ class AuthRepositoryImpl extends AuthRepository {
       String email = !isMobile ? authValue : "";
 
       if (isMobile) {
-        existingDocs =
-            await userCollection().where('phoneNumber', isEqualTo: phone).get();
+        existingDocs = await userCollection()
+            .where(PHONENUMBER, isEqualTo: phone)
+            .limit(1)
+            .get();
       } else {
-        existingDocs =
-            await userCollection().where('email', isEqualTo: email).get();
+        existingDocs = await userCollection()
+            .where(EMAIL, isEqualTo: email)
+            .limit(1)
+            .get();
       }
       if (existingDocs.docs.isEmpty) {
         return false;
@@ -139,11 +157,15 @@ class AuthRepositoryImpl extends AuthRepository {
       String email = !isMobile ? authValue : "";
 
       if (isMobile) {
-        existingDocs =
-            await userCollection().where('phoneNumber', isEqualTo: phone).get();
+        existingDocs = await userCollection()
+            .where(PHONENUMBER, isEqualTo: phone)
+            .limit(1)
+            .get();
       } else {
-        existingDocs =
-            await userCollection().where('email', isEqualTo: email).get();
+        existingDocs = await userCollection()
+            .where(EMAIL, isEqualTo: email)
+            .limit(1)
+            .get();
       }
 
       if (existingDocs.docs.isEmpty) {
@@ -170,13 +192,15 @@ class AuthRepositoryImpl extends AuthRepository {
 
       if (isMobile) {
         existingDocs = await otpValidationCollection()
-            .where('phoneNumber', isEqualTo: phone)
-            .where('otpFrom', isEqualTo: otpFrom)
+            .where(PHONENUMBER, isEqualTo: phone)
+            .where(OTPFROM, isEqualTo: otpFrom)
+            .limit(1)
             .get();
       } else {
         existingDocs = await otpValidationCollection()
-            .where('email', isEqualTo: email)
-            .where('otpFrom', isEqualTo: otpFrom)
+            .where(EMAIL, isEqualTo: email)
+            .where(OTPFROM, isEqualTo: otpFrom)
+            .limit(1)
             .get();
       }
 
@@ -216,13 +240,15 @@ class AuthRepositoryImpl extends AuthRepository {
 
       if (isMobile) {
         existingDocs = await otpValidationCollection()
-            .where('phoneNumber', isEqualTo: phone)
-            .where('otpFrom', isEqualTo: otpFrom)
+            .where(PHONENUMBER, isEqualTo: phone)
+            .where(OTPFROM, isEqualTo: otpFrom)
+            .limit(1)
             .get();
       } else {
         existingDocs = await otpValidationCollection()
-            .where('email', isEqualTo: email)
-            .where('otpFrom', isEqualTo: otpFrom)
+            .where(EMAIL, isEqualTo: email)
+            .where(OTPFROM, isEqualTo: otpFrom)
+            .limit(1)
             .get();
       }
 
@@ -232,7 +258,7 @@ class AuthRepositoryImpl extends AuthRepository {
         OTPLimitationModel model = OTPLimitationModel.fromJson(docData);
         DateTime elementTime = DateTime.parse(model.time);
         final difference = DateTime.now().toUtc().difference(elementTime);
-        if (difference.inMinutes >= 2) {
+        if (difference.inHours >= 8) {
           await otpValidationCollection().doc(existingDoc.id).delete();
         }
         return model.limit;
@@ -256,40 +282,35 @@ class AuthRepositoryImpl extends AuthRepository {
     try {
       if (isPhone) {
         existingDocs = await otpValidationCollection()
-            .where('phoneNumber', isEqualTo: phone)
+            .where(PHONENUMBER, isEqualTo: phone)
+            .limit(1)
             .get();
       } else {
         existingDocs = await otpValidationCollection()
-            .where('email', isEqualTo: email)
+            .where(EMAIL, isEqualTo: email)
+            .limit(1)
             .get();
       }
 
       if (existingDocs.docs.isNotEmpty) {
         var existingDoc = existingDocs.docs.first;
         String uid = existingDoc.id;
-
-        print("_______ 1");
+        print("________________ 0");
         print(uid);
-        print(password);
-
-        String resetPasswordUrl =
-            "https://us-central1-acuro-app-qa.cloudfunctions.net/updatePassword";
-
-        print("_______ 2");
-        print(resetPasswordUrl);
 
         Dio dio = Dio();
         dio.options.headers[CONTENT_TYPE] = APPLICATION_JSON;
-        Response apiResponse = await dio.post(resetPasswordUrl, data: {
-          'uid': uid,
-          'password': password,
-        });
-
+        Response apiResponse = await dio
+            .post(updatePasswordUrl, data: {"uid": uid, "password": password});
         if (apiResponse.statusCode != 200) {
+          print("________________ 1");
           print(apiResponse.statusCode);
           print(apiResponse.statusMessage);
-          return false;
+          print(apiResponse.data);
+          throw UnimplementedError();
         }
+        print("________________ 2");
+        print("true");
       }
       return true;
     } catch (err) {

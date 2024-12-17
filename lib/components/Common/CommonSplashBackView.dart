@@ -1,6 +1,5 @@
 
 import 'package:acuro/core/constants/ImageConstants.dart';
-import 'package:acuro/core/theme/AppColors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -10,19 +9,21 @@ class CommonSplashBackView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Theme.of(context).splashColor,
-            Theme.of(context).highlightColor,
-          ],
+    return Scaffold(
+      body: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Theme.of(context).splashColor,
+              Theme.of(context).highlightColor,
+            ],
+          ),
         ),
+        child: child,
       ),
-      child: child,
     );
   }
 }
@@ -34,6 +35,14 @@ class CommonBackView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-        onTap: onTap, child: SizedBox(child: SvgPicture.asset(ImageConstants.icArrowLeft,colorFilter: ColorFilter.mode(Theme.of(context).focusColor, BlendMode.srcIn),)));
+      onTap: onTap,
+      child: SizedBox(
+        child: SvgPicture.asset(
+          ImageConstants.icArrowLeft,
+          colorFilter:
+              ColorFilter.mode(Theme.of(context).focusColor, BlendMode.srcIn),
+        ),
+      ),
+    );
   }
 }

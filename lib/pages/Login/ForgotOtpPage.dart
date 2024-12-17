@@ -1,9 +1,11 @@
+
 import 'dart:async';
 import 'package:acuro/application/application/auth/bloc/AuthBloc.dart';
 import 'package:acuro/application/application/auth/bloc/AuthEvent.dart';
 import 'package:acuro/application/application/auth/bloc/AuthState.dart';
 import 'package:acuro/components/Common/CommonBackgroundView.dart';
 import 'package:acuro/components/Common/CommonTextStyle.dart';
+import 'package:acuro/components/Common/ErrorView.dart';
 import 'package:acuro/components/Login/OTPView.dart';
 import 'package:acuro/core/constants/Constants.dart';
 import 'package:acuro/core/di/Injectable.dart';
@@ -56,13 +58,23 @@ class _ForgotOtpPageState extends State<ForgotOtpPage> {
   }
 
   void callApiForSentOtp() {
-    getIt<AuthBloc>().add(VerifyOtpEvent(
-        smsCode: otpController.text.trim(), verificationId: verificationId));
+    if (widget.isEmail) {
+      context.read<AuthBloc>().add(VerifyEmailOtpEvent(
+          verificationId: verificationId, code: otpController.text.trim()));
+    } else {
+      getIt<AuthBloc>().add(VerifyOtpEvent(
+          smsCode: otpController.text.trim(), verificationId: verificationId));
+    }
   }
 
   void callApiForResendOtp() {
-    getIt<AuthBloc>().add(
-        ResendOtpEvent(phoneNumber: widget.detailsValue, isFromForgot: true));
+    if (widget.isEmail) {
+      context.read<AuthBloc>().add(VerifyEmailOtpEvent(
+          verificationId: verificationId, code: otpController.text.trim()));
+    } else {
+      getIt<AuthBloc>().add(
+          ResendOtpEvent(phoneNumber: widget.detailsValue, isFromForgot: true));
+    }
   }
 
   void startResendTimer() {
@@ -108,10 +120,21 @@ class _ForgotOtpPageState extends State<ForgotOtpPage> {
   Widget build(BuildContext context) {
     var appText = AppLocalizations.of(context)!;
     return BlocConsumer<AuthBloc, AuthState>(listener: (context, state) {
-      if (state is AuthVerifyLoading) {
+      if (state is AuthVerifyLoading || state is EmailAuthLoading) {
         isLoading = true;
       }
       if (state is AuthVerifyError) {
+        isLoading = false;
+        if (state.errorMessage == SO_MANY_ATTEMPT) {
+          _timer?.cancel();
+          canResend = false;
+          resendOtpValidation = 6;
+        } else if (!state.errorMessage.contains(BLOCKED)) {
+          hasError = true;
+          errorText = appText.code_you_have_entered_not_matched;
+        }
+      }
+      if (state is EmailAuthError) {
         isLoading = false;
         if (state.errorMessage == SO_MANY_ATTEMPT) {
           _timer?.cancel();
@@ -126,7 +149,11 @@ class _ForgotOtpPageState extends State<ForgotOtpPage> {
         isLoading = false;
         verificationId = state.verificationId;
       }
-      if (state is AuthVerified) {
+      if (state is AuthEmailOtpSent) {
+        isLoading = false;
+        verificationId = state.verificationId;
+      }
+      if (state is AuthVerified || state is EmailAuthVerified) {
         isLoading = false;
         navigateToResetPasswordRoute();
       }
@@ -135,50 +162,47 @@ class _ForgotOtpPageState extends State<ForgotOtpPage> {
         onTap: () {
           AppUtils.closeTheKeyboard(context);
         },
-        child: Scaffold(
-          backgroundColor: ColorConstants.white1,
-          body: CommonBackgroundView(
-            child: Padding(
-              padding: EdgeInsets.only(
-                  top: 60.h, bottom: 24.h, left: 20.w, right: 20.w),
-              child: SmoothView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // back view
-                    CommonBackView(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                    SizedBox(height: 14.h),
-                    // headerView
-                    headerView(appText),
-                    SizedBox(height: 32.h),
-                    // otp View
-                    OtpView(
-                      controller: otpController,
-                      hasError: hasError,
-                      onChanged: (p0) {
-                        hasError = false;
-                        setState(() {});
-                      },
-                    ),
-                    // otp error view
-                    errorView(),
-                    SizedBox(height: 16.h),
-                    //resend text
-                    resendText(appText),
-                    const Spacer(),
-                    // submit button
-                    CommonButton(
-                        onTap: callApiForSentOtp,
-                        isEnable: otpController.text.length == 6,
-                        isLoading: isLoading,
-                        buttonText: appText.continueText)
-                  ],
-                ),
+        child: CommonBackgroundView(
+          child: Padding(
+            padding: EdgeInsets.only(
+                top: 60.h, bottom: 24.h, left: 20.w, right: 20.w),
+            child: SmoothView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // back view
+                  CommonBackView(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  SizedBox(height: 14.h),
+                  // headerView
+                  headerView(appText),
+                  SizedBox(height: 32.h),
+                  // otp View
+                  OtpView(
+                    controller: otpController,
+                    hasError: hasError,
+                    onChanged: (p0) {
+                      hasError = false;
+                      setState(() {});
+                    },
+                  ),
+                  // otp error view
+                  AuthErrorView(isError: hasError,errorText: errorText),
+                  SizedBox(height: 16.h),
+                  //resend text
+                  resendText(appText),
+                  const Spacer(),
+                  // submit button
+                  CommonButton(
+                      onTap: callApiForSentOtp,
+                      isEnable: otpController.text.length == 6,
+                      isLoading: isLoading,
+                      buttonText: appText.continueText)
+                ],
               ),
             ),
           ),
@@ -193,15 +217,6 @@ class _ForgotOtpPageState extends State<ForgotOtpPage> {
       bodyText:
           "${appText.please_enter_the_code_we_sent_to}\n${widget.detailsValue}",
     );
-  }
-
-  Widget errorView() {
-    return hasError
-        ? Text(
-            errorText,
-            style: textWith16W400(ColorConstants.red),
-          )
-        : const SizedBox.shrink();
   }
 
   Widget resendText(AppLocalizations appText) {

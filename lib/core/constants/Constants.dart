@@ -11,6 +11,10 @@ const HEADER_AUTHORIZATION = 'Authorization';
 const APPLICATION_JSON = 'application/json';
 const CONTENT_TYPE = 'Content-Type';
 
+// firebase collection for reset password
+const String updatePasswordUrl =
+    "https://us-central1-acuro-app-qa.cloudfunctions.net/updatePassword";
+
 enum RoleSelectionEnum { selected, unSelected, comingSoon }
 
 enum OTPEnum { phone, email, forgotPassword }
@@ -25,8 +29,12 @@ const PHONEAUTH = "phone";
 const EMAILAUTH = "email";
 const FORGOTPHONE = "forgotphone";
 const FORGOTEMAIL = "forgotmail";
+const PHONENUMBER = "phoneNumber";
+const EMAIL = "email";
+const OTPFROM = "otpFrom";
 const SOMETHING_WANT_WRONG = "Somethings want wrong";
 const NUMBER_NOT_REGISTER = "Number not registered";
+const EMAIL_NOT_REGISTER = "Email not registered";
 const SO_MANY_ATTEMPT = "So many attempt";
 const OTP = "otp";
 const BLOCKED = "blocked";
