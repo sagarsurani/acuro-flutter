@@ -1,5 +1,9 @@
-
 import 'dart:async';
+import 'dart:convert';
+import 'dart:developer';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+
 import 'package:acuro/application/application/auth/repositories/AuthRepository.dart';
 import 'package:acuro/core/constants/Constants.dart';
 import 'package:acuro/core/constants/EnvVariable.dart';
@@ -8,7 +12,17 @@ import 'package:acuro/core/utils/ToastUtils.dart';
 import 'package:acuro/models/Auth/OtpLimitationModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
+import 'package:googleapis_auth/auth_io.dart';
 import 'package:injectable/injectable.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:pointycastle/api.dart';
+import 'package:pointycastle/asn1/asn1_parser.dart';
+import 'package:pointycastle/asn1/primitives/asn1_integer.dart';
+import 'package:pointycastle/asn1/primitives/asn1_sequence.dart';
+import 'package:pointycastle/asymmetric/api.dart';
+import 'package:pointycastle/digests/sha256.dart';
+import 'package:pointycastle/signers/rsa_signer.dart';
 import '../../../../models/Auth/UserModel.dart';
 import 'package:dio/dio.dart';
 
@@ -295,18 +309,25 @@ class AuthRepositoryImpl extends AuthRepository {
       if (existingDocs.docs.isNotEmpty) {
         var existingDoc = existingDocs.docs.first;
         String uid = existingDoc.id;
+
+        String clientToken = await generateTokenAndCallResetCloudFun();
+
+        // print(data.toString());
         print("________________ 0");
         print(uid);
-
         Dio dio = Dio();
+
+        // dio.options.headers = {
+        //   AUTHORIZATION : '$BEARER $clientToken',
+        //   CONTENT_TYPE : APPLICATION_JSON,
+        // };
+        dio.options.headers[AUTHORIZATION] = "$BEARER $clientToken";
+        // dio.options.headers[AUTHORIZATION] = "$BEARER ${clientToken.replaceAll('"', '')}";
         dio.options.headers[CONTENT_TYPE] = APPLICATION_JSON;
         Response apiResponse = await dio
             .post(updatePasswordUrl, data: {"uid": uid, "password": password});
         if (apiResponse.statusCode != 200) {
           print("________________ 1");
-          print(apiResponse.statusCode);
-          print(apiResponse.statusMessage);
-          print(apiResponse.data);
           throw UnimplementedError();
         }
         print("________________ 2");
@@ -318,6 +339,118 @@ class AuthRepositoryImpl extends AuthRepository {
       return false;
     }
   }
+
+  Future<String> generateTokenAndCallResetCloudFun() async {
+    try {
+      // final clientEmail = serviceAccount['client_email'];
+      // final privateKey = serviceAccount['private_key'];
+      // final clientId = serviceAccount['client_id'];
+      //
+
+      final String response = await rootBundle.loadString("assets/cloud/acuro_service.json");
+      Map<String, dynamic> serviceAccount = await json.decode(response);
+      List<String> scopes = [
+        'https://www.googleapis.com/auth/cloud-platform',
+        'https://www.googleapis.com/auth/firebase.database',
+        // 'https://www.googleapis.com/auth/userinfo.email',
+      ];
+
+      final accountCredentials = ServiceAccountCredentials.fromJson(serviceAccount);
+      // final client = http.Client();
+
+      // 1
+      // AccessCredentials client1 = await obtainAccessCredentialsViaServiceAccount(accountCredentials, scopes,client);
+
+      // 2
+      // final authClient = await clientViaServiceAccount(
+      //   ServiceAccountCredentials(clientEmail, ClientId(clientId), privateKey),
+      //   scopes,
+      // );
+
+      // 3
+      AuthClient client1 = await clientViaServiceAccount(accountCredentials, scopes);
+      // final client = await clientViaServiceAccount(accountCredentials, scopes);
+
+      // 4
+      // final response1 = await client.get(Uri.parse('https://www.googleapis.com/auth/cloud-platform'));
+
+
+      // Make a request to an API endpoint (e.g., Google Cloud Storage or any other Google service)
+
+      // 4
+      // if (response1.statusCode == 200) {
+      //   final responseData = jsonDecode(response1.body);
+      //   log(responseData['access_token']);
+      //   return responseData['access_token'];
+      // } else {
+      //   throw Exception('Failed to obtain access token: ${response1.body}');
+      // }
+
+
+      log("_________________");
+      log(client1.credentials.accessToken.data);
+      log(client1.credentials.accessToken.type);
+      log(client1.credentials.accessToken.expiry.toString());
+      log(client1.credentials.idToken ?? "null token");
+      final token = client1.credentials.accessToken.data ?? "";
+
+
+      return token;
+    } catch (err) {
+      print(" Error ________________ ${err.toString()}");
+      return "";
+    }
+  }
+  //
+  // void decodeToken(String jwtToken) {
+  //   Map<String, dynamic> decodedToken = JwtDecoder.decode(jwtToken);
+  //   log(decodedToken.toString());
+  // }
+
+  // Future<String> generateJwt() async {
+  //   final String response =
+  //       await rootBundle.loadString("assets/cloud/acuro_service.json");
+  //   Map<String, dynamic> serviceAccount = await json.decode(response);
+  //   final privateKey = serviceAccount['private_key'];
+  //   String cleanedPrivateKey = privateKey.replaceAll(RegExp(r'(-+BEGIN PRIVATE KEY-+|-+END PRIVATE KEY-+|\n)'), '');
+  //   final clientEmail = serviceAccount['client_email'];
+  //   // final clientId = serviceAccount['client_id'];
+  //
+  //   Map<String, dynamic> payload = {
+  //     "iss": clientEmail, // From JSON `client_email`
+  //     "scope":
+  //         'https://www.googleapis.com/auth/cloud-platform', // Define scopes
+  //     "aud": 'https://oauth2.googleapis.com/token',
+  //     "exp":
+  //         (DateTime.now().microsecondsSinceEpoch) + 3600, // 1-hour expiration
+  //     "iat": (DateTime.now().microsecondsSinceEpoch),
+  //   };
+  //
+  //   // Create the header
+  //   final header = json.encode({
+  //     'alg': 'RS256',
+  //     'typ': 'JWT',
+  //   });
+  //
+  //   // Base64Url encode the header
+  //   final encodedHeader = base64Url.encode(utf8.encode(header));
+  //
+  //   // Base64Url encode the payload
+  //   final encodedPayload = base64Url.encode(utf8.encode(json.encode(payload)));
+  //
+  //   // Concatenate header and payload
+  //   final unsignedJwt = '$encodedHeader.$encodedPayload';
+  //
+  //   // Sign the JWT with the private key
+  //   final signer = RSASigner(SHA256Digest(), privateKey);
+  //   final signature = signer.generateSignature(utf8.encode(unsignedJwt));
+  //
+  //   // Base64Url encode the signature
+  //   final encodedSignature = base64Url.encode(signature.bytes);
+  //
+  //   // Concatenate to form the final JWT
+  //   return '$unsignedJwt.$encodedSignature';
+  // }
 
   @override
   Future<List<OTPLimitationModel>> getAllOTPLimitationList() async {

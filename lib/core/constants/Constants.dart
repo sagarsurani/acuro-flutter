@@ -9,7 +9,9 @@ const AEONIK = "Aeonik";
 const HEADER_PROTECTED_AUTHENTICATION_PREFIX = 'Bearer';
 const HEADER_AUTHORIZATION = 'Authorization';
 const APPLICATION_JSON = 'application/json';
+const BEARER = 'Bearer';
 const CONTENT_TYPE = 'Content-Type';
+const AUTHORIZATION = 'Authorization';
 
 // firebase collection for reset password
 const String updatePasswordUrl =
