@@ -65,9 +65,6 @@ dependencies:
   cloud_functions: ^5.2.0
   device_info_plus: ^11.2.0
   googleapis_auth: ^1.6.0
-  jwt_decoder: ^2.0.1
-  crypto: ^3.0.6
-  pointycastle: ^3.9.1
 
 dev_dependencies:
   flutter_test:

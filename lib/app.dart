@@ -1,9 +1,10 @@
-import 'package:acuro/application/application/auth/bloc/AuthBloc.dart';
+
 import 'package:acuro/core/di/Injectable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'application/auth/bloc/AuthBloc.dart';
 import 'core/constants/Constants.dart';
 import 'core/navigator/AppRouter.dart';
 import 'core/theme/AppTheme.dart';

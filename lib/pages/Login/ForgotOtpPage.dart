@@ -1,8 +1,8 @@
 
 import 'dart:async';
-import 'package:acuro/application/application/auth/bloc/AuthBloc.dart';
-import 'package:acuro/application/application/auth/bloc/AuthEvent.dart';
-import 'package:acuro/application/application/auth/bloc/AuthState.dart';
+import 'package:acuro/application/auth/bloc/AuthBloc.dart';
+import 'package:acuro/application/auth/bloc/AuthEvent.dart';
+import 'package:acuro/application/auth/bloc/AuthState.dart';
 import 'package:acuro/components/Common/CommonBackgroundView.dart';
 import 'package:acuro/components/Common/CommonTextStyle.dart';
 import 'package:acuro/components/Common/ErrorView.dart';
@@ -107,7 +107,9 @@ class _ForgotOtpPageState extends State<ForgotOtpPage> {
 
   void navigateToResetPasswordRoute() {
     context.router.replace(ResetPasswordRoute(
-        emailOrPhone: widget.detailsValue, isPhone: !widget.isEmail));
+        emailOrPhone: widget.detailsValue,
+        isPhone: !widget.isEmail
+    ));
   }
 
   @override

@@ -13,9 +13,13 @@ const BEARER = 'Bearer';
 const CONTENT_TYPE = 'Content-Type';
 const AUTHORIZATION = 'Authorization';
 
-// firebase collection for reset password
 const String updatePasswordUrl =
     "https://us-central1-acuro-app-qa.cloudfunctions.net/updatePassword";
+
+const String senEmailOtpFunction =
+    "https://us-central1-acuro-app-qa.cloudfunctions.net/sendEmail";
+
+const String generateServiceTokenUrl = "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/361342922595-compute@developer.gserviceaccount.com:generateIdToken";
 
 enum RoleSelectionEnum { selected, unSelected, comingSoon }
 

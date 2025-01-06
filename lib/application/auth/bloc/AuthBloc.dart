@@ -241,11 +241,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           ? await getEmailFromUserData(event.emailOrPhone, true)
           : event.emailOrPhone;
 
-      print("_______________");
-      print(email);
-      print(event.emailOrPhone);
-      print(event.password);
-
       if (email.isEmpty) {
         emit(const LoginAuthError(errorMessage: SOMETHING_WANT_WRONG));
         return;

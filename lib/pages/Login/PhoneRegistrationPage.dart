@@ -1,6 +1,7 @@
-import 'package:acuro/application/application/auth/bloc/AuthBloc.dart';
-import 'package:acuro/application/application/auth/bloc/AuthEvent.dart';
-import 'package:acuro/application/application/auth/bloc/AuthState.dart';
+
+import 'package:acuro/application/auth/bloc/AuthBloc.dart';
+import 'package:acuro/application/auth/bloc/AuthEvent.dart';
+import 'package:acuro/application/auth/bloc/AuthState.dart';
 import 'package:acuro/components/Common/AnimatedSwitcher.dart';
 import 'package:acuro/components/Common/CommonBackgroundView.dart';
 import 'package:acuro/components/Common/CommonButton.dart';

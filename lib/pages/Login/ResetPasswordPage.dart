@@ -1,6 +1,7 @@
 
-import 'package:acuro/application/application/auth/bloc/AuthEvent.dart';
-import 'package:acuro/application/application/auth/bloc/AuthState.dart';
+import 'package:acuro/application/auth/bloc/AuthBloc.dart';
+import 'package:acuro/application/auth/bloc/AuthEvent.dart';
+import 'package:acuro/application/auth/bloc/AuthState.dart';
 import 'package:acuro/components/Common/AnimatedSwitcher.dart';
 import 'package:acuro/components/Common/CommonBackgroundView.dart';
 import 'package:acuro/components/Common/CommonButton.dart';
@@ -16,14 +17,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../../application/application/auth/bloc/AuthBloc.dart';
 
 @RoutePage()
 class ResetPasswordPage extends StatefulWidget {
   final String emailOrPhone;
   final bool isPhone;
   const ResetPasswordPage(
-      {super.key, required this.emailOrPhone, required this.isPhone});
+      {super.key,
+        required this.emailOrPhone,
+        required this.isPhone
+      });
 
   @override
   State<ResetPasswordPage> createState() => _ResetPasswordPageState();
@@ -51,7 +54,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     getIt<AuthBloc>().add(ResetPassword(
         emailOrPhone: widget.emailOrPhone,
         password: passwordController.text.trim(),
-        isPhone: widget.isPhone));
+        isPhone: widget.isPhone
+    ));
   }
 
   void checkPasswordChangedValidation(String text) {

@@ -8,11 +8,11 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:acuro/application/application/auth/bloc/AuthBloc.dart' as _i510;
-import 'package:acuro/application/application/auth/repositories/AuthRepository.dart'
-    as _i1032;
-import 'package:acuro/application/application/auth/repositories/AuthRepositoryImpl.dart'
-    as _i683;
+import 'package:acuro/application/auth/bloc/AuthBloc.dart' as _i641;
+import 'package:acuro/application/auth/repositories/AuthRepository.dart'
+    as _i330;
+import 'package:acuro/application/auth/repositories/AuthRepositoryImpl.dart'
+    as _i589;
 import 'package:acuro/core/interceptors/network_auth_interceptor.dart' as _i115;
 import 'package:acuro/core/interceptors/network_error_interceptor.dart'
     as _i146;
@@ -41,9 +41,9 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i146.NetworkErrorInterceptor());
     gh.singleton<_i115.NetworkAuthInterceptor>(
         () => _i115.NetworkAuthInterceptor());
-    gh.lazySingleton<_i1032.AuthRepository>(() => _i683.AuthRepositoryImpl());
-    gh.singleton<_i510.AuthBloc>(
-        () => _i510.AuthBloc(authRepository: gh<_i1032.AuthRepository>()));
+    gh.lazySingleton<_i330.AuthRepository>(() => _i589.AuthRepositoryImpl());
+    gh.singleton<_i641.AuthBloc>(
+        () => _i641.AuthBloc(authRepository: gh<_i330.AuthRepository>()));
     return this;
   }
 }
