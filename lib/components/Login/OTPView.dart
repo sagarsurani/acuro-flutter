@@ -1,6 +1,6 @@
 import 'package:acuro/components/Common/CommonTextStyle.dart';
-import 'package:acuro/core/utils/AppUtils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../core/theme/AppColors.dart';
@@ -28,7 +28,7 @@ class _OtpViewState extends State<OtpView> {
       appContext: context,
       obscureText: false,
       animationType: AnimationType.fade,
-      inputFormatters: AppUtils.onlyDigitsFormatter(0),
+      inputFormatters: [],
       textStyle: textWith20W400(Theme.of(context).focusColor),
       pinTheme: PinTheme(
         inactiveFillColor: Theme.of(context).secondaryHeaderColor,

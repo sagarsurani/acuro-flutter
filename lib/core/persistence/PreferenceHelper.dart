@@ -17,7 +17,7 @@ class PreferenceHelper {
 
   static getIsLogin() async {
     return await Preferences.getBool(isLogin, false);
-  }   
+  }
 
   static setIsLogin(bool value) async {
     await Preferences.setBool(isLogin, value);
@@ -29,5 +29,11 @@ class PreferenceHelper {
 
   static Future<String?> getUserEmail() async {
     return await Preferences.getString(userEmail, null);
+  }
+
+  static Future<void> clearAllPreferences() async {
+    await Preferences.clear(accessToken);
+    await Preferences.clear(isLogin);
+    await Preferences.clear(userEmail);
   }
 }

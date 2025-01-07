@@ -52,7 +52,7 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
     super.initState();
   }
 
-  void callApiForSentOtp() {
+  void callApiForVerifyOtp() {
     hasError = false;
     getIt<AuthBloc>().add(VerifyOtpEvent(
         smsCode: otpController.text.trim(), verificationId: verificationId));
@@ -121,7 +121,7 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
       }
       if (state is AuthVerified) {
         isLoading = false;
-        context.router.push(const EmailVerificationRoute());
+        context.router.replace(const EmailVerificationRoute());
       }
     }, builder: (context, state) {
       return GestureDetector(
@@ -164,7 +164,7 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
                   const Spacer(),
                   // submit button
                   CommonButton(
-                      onTap: callApiForSentOtp,
+                      onTap: callApiForVerifyOtp,
                       isLoading: isLoading,
                       isEnable: otpController.text.length == 6,
                       buttonText: appText.continueText)

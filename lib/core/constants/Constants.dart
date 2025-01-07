@@ -16,10 +16,14 @@ const AUTHORIZATION = 'Authorization';
 const String updatePasswordUrl =
     "https://us-central1-acuro-app-qa.cloudfunctions.net/updatePassword";
 
-const String senEmailOtpFunction =
+const String senEmailOtpFunctionUrl =
     "https://us-central1-acuro-app-qa.cloudfunctions.net/sendEmail";
 
-const String generateServiceTokenUrl = "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/361342922595-compute@developer.gserviceaccount.com:generateIdToken";
+const String verifyEmailOtpFunctionUrl =
+    "https://us-central1-acuro-app-qa.cloudfunctions.net/verifyEmailOtp";
+
+const String generateServiceTokenUrl =
+    "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/361342922595-compute@developer.gserviceaccount.com:generateIdToken";
 
 enum RoleSelectionEnum { selected, unSelected, comingSoon }
 
@@ -94,3 +98,4 @@ List<CommodityCategoryModel> commodityCategoryListStatic = [
   CommodityCategoryModel(name: "Metals", isSelected: false),
   CommodityCategoryModel(name: "Chemicals", isSelected: false),
 ];
+

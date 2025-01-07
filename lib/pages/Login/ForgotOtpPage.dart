@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'package:acuro/application/auth/bloc/AuthBloc.dart';
 import 'package:acuro/application/auth/bloc/AuthEvent.dart';
@@ -28,12 +27,15 @@ class ForgotOtpPage extends StatefulWidget {
   final bool isEmail;
   final String detailsValue;
   final String verificationId;
+  final String verifyCode;
 
-  const ForgotOtpPage(
-      {super.key,
-      required this.isEmail,
-      required this.detailsValue,
-      required this.verificationId});
+  const ForgotOtpPage({
+    super.key,
+    required this.isEmail,
+    required this.detailsValue,
+    required this.verificationId,
+    required this.verifyCode,
+  });
 
   @override
   State<ForgotOtpPage> createState() => _ForgotOtpPageState();
@@ -49,15 +51,17 @@ class _ForgotOtpPageState extends State<ForgotOtpPage> {
   bool isLoading = false;
   int resendOtpValidation = 0;
   String verificationId = "";
+  // String verifyCode = "";
 
   @override
   void initState() {
     startResendTimer();
     verificationId = widget.verificationId;
+    // verifyCode = widget.verifyCode;
     super.initState();
   }
 
-  void callApiForSentOtp() {
+  void callApiForVerifyOTP() {
     if (widget.isEmail) {
       context.read<AuthBloc>().add(VerifyEmailOtpEvent(
           verificationId: verificationId, code: otpController.text.trim()));
@@ -69,8 +73,7 @@ class _ForgotOtpPageState extends State<ForgotOtpPage> {
 
   void callApiForResendOtp() {
     if (widget.isEmail) {
-      context.read<AuthBloc>().add(VerifyEmailOtpEvent(
-          verificationId: verificationId, code: otpController.text.trim()));
+      SendEmailOtpEvent(email: widget.detailsValue.trim(), isFromForgot: true);
     } else {
       getIt<AuthBloc>().add(
           ResendOtpEvent(phoneNumber: widget.detailsValue, isFromForgot: true));
@@ -107,9 +110,7 @@ class _ForgotOtpPageState extends State<ForgotOtpPage> {
 
   void navigateToResetPasswordRoute() {
     context.router.replace(ResetPasswordRoute(
-        emailOrPhone: widget.detailsValue,
-        isPhone: !widget.isEmail
-    ));
+        emailOrPhone: widget.detailsValue, isPhone: !widget.isEmail));
   }
 
   @override
@@ -193,14 +194,14 @@ class _ForgotOtpPageState extends State<ForgotOtpPage> {
                     },
                   ),
                   // otp error view
-                  AuthErrorView(isError: hasError,errorText: errorText),
+                  AuthErrorView(isError: hasError, errorText: errorText),
                   SizedBox(height: 16.h),
                   //resend text
                   resendText(appText),
                   const Spacer(),
                   // submit button
                   CommonButton(
-                      onTap: callApiForSentOtp,
+                      onTap: callApiForVerifyOTP,
                       isEnable: otpController.text.length == 6,
                       isLoading: isLoading,
                       buttonText: appText.continueText)

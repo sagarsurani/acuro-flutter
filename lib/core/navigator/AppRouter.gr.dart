@@ -153,6 +153,7 @@ class ForgotOtpRoute extends _i16.PageRouteInfo<ForgotOtpRouteArgs> {
     required bool isEmail,
     required String detailsValue,
     required String verificationId,
+    required String verifyCode,
     List<_i16.PageRouteInfo>? children,
   }) : super(
           ForgotOtpRoute.name,
@@ -161,6 +162,7 @@ class ForgotOtpRoute extends _i16.PageRouteInfo<ForgotOtpRouteArgs> {
             isEmail: isEmail,
             detailsValue: detailsValue,
             verificationId: verificationId,
+            verifyCode: verifyCode,
           ),
           initialChildren: children,
         );
@@ -176,6 +178,7 @@ class ForgotOtpRoute extends _i16.PageRouteInfo<ForgotOtpRouteArgs> {
         isEmail: args.isEmail,
         detailsValue: args.detailsValue,
         verificationId: args.verificationId,
+        verifyCode: args.verifyCode,
       );
     },
   );
@@ -187,6 +190,7 @@ class ForgotOtpRouteArgs {
     required this.isEmail,
     required this.detailsValue,
     required this.verificationId,
+    required this.verifyCode,
   });
 
   final _i17.Key? key;
@@ -197,9 +201,11 @@ class ForgotOtpRouteArgs {
 
   final String verificationId;
 
+  final String verifyCode;
+
   @override
   String toString() {
-    return 'ForgotOtpRouteArgs{key: $key, isEmail: $isEmail, detailsValue: $detailsValue, verificationId: $verificationId}';
+    return 'ForgotOtpRouteArgs{key: $key, isEmail: $isEmail, detailsValue: $detailsValue, verificationId: $verificationId, verifyCode: $verifyCode}';
   }
 }
 

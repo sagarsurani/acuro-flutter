@@ -48,6 +48,7 @@ class _LoginPageState extends State<LoginPage>
   bool isLoading = false;
   bool isPhonePasswordVisible = false;
   bool isEmailConformPasswordVisible = false;
+  List<int> maxNumbers = [10];
 
   @override
   void initState() {
@@ -84,8 +85,16 @@ class _LoginPageState extends State<LoginPage>
     return currentIndex == 0
         ? AppUtils.isEmailValid(emailController.text.trim()) &&
             AppUtils.isPasswordValid(passwordController.text.trim())
-        : phoneController.text.trim().length == EnvVariable.maxNumber &&
+        : isValidPhone(phoneController.text.trim().length) &&
             AppUtils.isPasswordValid(mobilePasswordController.text.trim());
+  }
+
+  bool isValidPhone(int value) {
+    return (maxNumbers).contains(value);
+  }
+
+  Future<void> findMaxNumber() async {
+    maxNumbers = await AppUtils.findMaxNumberOfMobile(countryCode);
   }
 
   @override
@@ -237,10 +246,11 @@ class _LoginPageState extends State<LoginPage>
                 countryFlag: countryFlag,
                 countryName: countryName,
                 onSelect: (country) {
-                  setState(() {
+                  setState(() async {
                     countryCode = '+${country.phoneCode}';
                     countryName = country.name;
                     countryFlag = country.countryCode;
+                    await findMaxNumber();
                   });
                 },
               ),
@@ -252,11 +262,10 @@ class _LoginPageState extends State<LoginPage>
                 controller: phoneController,
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
-                inputFormatters:
-                    AppUtils.onlyDigitsFormatter(EnvVariable.maxNumber),
-                onChanged: (p0) {
+                inputFormatters: AppUtils.onlyDigitsFormatter(maxNumbers),
+                onChanged: (p0) async {
                   hasError = false;
-                  if (p0.trim().length == EnvVariable.maxNumber) {
+                  if (isValidPhone(p0.trim().length)) {
                     AppUtils.closeTheKeyboard(context);
                   }
                   setState(() {});

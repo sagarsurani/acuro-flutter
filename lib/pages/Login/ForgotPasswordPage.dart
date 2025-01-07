@@ -1,4 +1,3 @@
-
 import 'package:acuro/application/auth/bloc/AuthBloc.dart';
 import 'package:acuro/application/auth/bloc/AuthEvent.dart';
 import 'package:acuro/application/auth/bloc/AuthState.dart';
@@ -10,7 +9,6 @@ import 'package:acuro/components/Common/CommonTabView.dart';
 import 'package:acuro/components/Common/CommonTextStyle.dart';
 import 'package:acuro/components/Common/CountryCodePicker.dart';
 import 'package:acuro/components/Common/CustomTextField.dart';
-import 'package:acuro/core/constants/EnvVariable.dart';
 import 'package:acuro/core/di/Injectable.dart';
 import 'package:acuro/core/navigator/AppRouter.gr.dart';
 import 'package:acuro/core/theme/AppColors.dart';
@@ -44,6 +42,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
   String errorText = '';
   bool hasError = false;
   bool isTooManyAttempt = false;
+  List<int> maxNumbers = [10];
 
   @override
   void initState() {
@@ -81,14 +80,15 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
   bool isButtonEnabled() {
     return currentIndex == 0
         ? AppUtils.isEmailValid(emailController.text.trim())
-        : phoneController.text.trim().length == EnvVariable.maxNumber;
+        : isValidPhone(phoneController.text.trim().length);
   }
 
-  void navigateToOtpPage({required String verificationId}) {
+  void navigateToOtpPage({required String verificationValue}) {
     hasError = false;
     context.router.push(ForgotOtpRoute(
         isEmail: currentIndex == 0,
-        verificationId: verificationId,
+        verificationId: verificationValue,
+        verifyCode: verificationValue,
         detailsValue: currentIndex == 0
             ? emailController.text.trim()
             : "$countryCode ${phoneController.text}"));
@@ -101,6 +101,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
     if (errorText == SO_MANY_ATTEMPT) {
       isTooManyAttempt = true;
     }
+  }
+
+  bool isValidPhone(int value) {
+    return (maxNumbers).contains(value);
+  }
+
+  Future<void> findMaxNumber() async {
+    maxNumbers = await AppUtils.findMaxNumberOfMobile(countryCode);
   }
 
   @override
@@ -118,11 +126,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
       }
       if (state is AuthOtpSent) {
         isLoading = false;
-        navigateToOtpPage(verificationId: state.verificationId);
+        navigateToOtpPage(verificationValue: state.verificationId);
       }
       if (state is AuthEmailOtpSent) {
         isLoading = false;
-        navigateToOtpPage(verificationId: state.verificationId);
+        navigateToOtpPage(verificationValue: state.verificationId);
       }
     }, builder: (context, state) {
       return GestureDetector(
@@ -252,13 +260,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
                 controller: phoneController,
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
-                inputFormatters:
-                    AppUtils.onlyDigitsFormatter(EnvVariable.maxNumber),
+                inputFormatters: AppUtils.onlyDigitsFormatter(maxNumbers),
                 onChanged: (p0) {
                   hasError = false;
                   isTooManyAttempt = false;
                   setState(() {});
-                  if (p0.trim().length == EnvVariable.maxNumber) {
+                  if (isValidPhone(p0.trim().length)) {
                     AppUtils.closeTheKeyboard(context);
                   }
                 },

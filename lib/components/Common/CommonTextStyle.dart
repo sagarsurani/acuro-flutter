@@ -88,3 +88,16 @@ textWith40W500WithGradient(
         ).createShader(const Rect.fromLTWH(0.0, 0.0, 200.0, 70.0))
   );
 }
+
+textWith16W500WithGradient(
+    List<Color> colors,
+    ) {
+  return TextStyle(
+      fontSize: 16.sp,
+      fontWeight: FontWeight.w500,
+      foreground: Paint()
+        ..shader = LinearGradient(
+          colors: colors,
+        ).createShader(const Rect.fromLTWH(0.0, 0.0, 20.0, 20.0))
+  );
+}

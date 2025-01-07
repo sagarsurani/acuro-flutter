@@ -81,19 +81,24 @@ class AuthRepositoryImpl extends AuthRepository {
   Future<String> sendEmailOtp({required String email}) async {
     try {
       String clientToken = await AppUtils.generateServiceAccountToken(
-        cloudUrl: updatePasswordUrl,
+        cloudUrl: senEmailOtpFunctionUrl,
       );
 
       Dio dio = Dio();
       dio.options.headers[AUTHORIZATION] = "$BEARER $clientToken";
       dio.options.headers[CONTENT_TYPE] = APPLICATION_JSON;
-      Response response = await dio.post(updatePasswordUrl, data: {"email": email});
 
-      if (response.statusCode == 200 && response.data != null) {
-        var data = response.data;
-        if (data['status'] == true && data['data'] != null) {
-          return data['data']['otp'] ?? "";
+      try {
+        Response response =
+            await dio.post(senEmailOtpFunctionUrl, data: {"email": email});
+        if (response.statusCode == 200 && response.data != null) {
+          var data = response.data;
+          if (data['status'] == true && data['data'] != null) {
+            return data['data']['validationId'] ?? "";
+          }
         }
+      } catch (err) {
+        print(err.toString());
       }
       return "";
     } catch (err) {
@@ -104,10 +109,26 @@ class AuthRepositoryImpl extends AuthRepository {
   @override
   Future<bool> verifyEmailOtp(
       {required String verificationId, required String code}) async {
-    // static return way
-    if (verificationId == "12345678901234567890" && code == "123456") {
-      return true;
-    } else {
+    String clientToken = await AppUtils.generateServiceAccountToken(
+      cloudUrl: verifyEmailOtpFunctionUrl,
+    );
+
+    Dio dio = Dio();
+    dio.options.headers[AUTHORIZATION] = "$BEARER $clientToken";
+    dio.options.headers[CONTENT_TYPE] = APPLICATION_JSON;
+
+    try {
+      Response response = await dio.post(verifyEmailOtpFunctionUrl,
+          data: {"validationId": verificationId, "otp": code});
+
+      if (response.statusCode == 200 &&
+          response.data != null &&
+          response.data['status'] == true) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (err) {
       return false;
     }
   }
@@ -282,6 +303,7 @@ class AuthRepositoryImpl extends AuthRepository {
         final difference = DateTime.now().toUtc().difference(elementTime);
         if (difference.inHours >= 8) {
           await otpValidationCollection().doc(existingDoc.id).delete();
+          return 0;
         }
         return model.limit;
       }

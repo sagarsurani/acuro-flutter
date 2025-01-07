@@ -1,4 +1,3 @@
-
 import 'package:acuro/application/auth/bloc/AuthBloc.dart';
 import 'package:acuro/application/auth/bloc/AuthEvent.dart';
 import 'package:acuro/application/auth/bloc/AuthState.dart';
@@ -11,7 +10,6 @@ import 'package:acuro/components/Common/CountryCodePicker.dart';
 import 'package:acuro/components/Common/CustomTextField.dart';
 import 'package:acuro/components/Login/CommonAuthHeader.dart';
 import 'package:acuro/core/constants/Constants.dart';
-import 'package:acuro/core/constants/EnvVariable.dart';
 import 'package:acuro/core/di/Injectable.dart';
 import 'package:acuro/core/navigator/AppRouter.gr.dart';
 import 'package:acuro/core/theme/AppColors.dart';
@@ -38,27 +36,26 @@ class _PhoneRegistrationPageState extends State<PhoneRegistrationPage> {
   bool isButtonEnabled = false;
   bool isTooManyAttempt = false;
   bool isLoading = false;
+  List<int> maxNumbers = [10];
 
   @override
   void initState() {
     super.initState();
     phoneController.addListener(() {
-      validatePhoneNumber(phoneController.text);
+      validatePhoneNumber(phoneController.text.length);
     });
   }
 
   void callApiForSentOtp() {
+    isTooManyAttempt = false;
     getIt<AuthBloc>().add(SendOtpEvent(
         phoneNumber: "$countryCode${phoneController.text}",
         isFromForgot: false));
   }
 
-  void validatePhoneNumber(String value) {
+  void validatePhoneNumber(int value) {
     setState(() {
-      isButtonEnabled = value.length == EnvVariable.maxNumber;
-      if(isButtonEnabled){
-        AppUtils.closeTheKeyboard(context);
-      }
+      isButtonEnabled = isValidPhone(value);
     });
   }
 
@@ -69,7 +66,16 @@ class _PhoneRegistrationPageState extends State<PhoneRegistrationPage> {
   }
 
   void navigateToLoginRoute() {
+    isTooManyAttempt = false;
     context.router.replace(const LoginRoute());
+  }
+
+  bool isValidPhone(int value) {
+    return (maxNumbers).contains(value);
+  }
+
+  Future<void> findMaxNumber() async {
+    maxNumbers = await AppUtils.findMaxNumberOfMobile(countryFlag);
   }
 
   @override
@@ -121,11 +127,12 @@ class _PhoneRegistrationPageState extends State<PhoneRegistrationPage> {
                           countryFlag: countryFlag,
                           countryName: countryName,
                           onSelect: (country) {
-                            setState(() {
+                            setState(()  {
                               countryCode = '+${country.phoneCode}';
                               countryName = country.name;
                               countryFlag = country.countryCode;
                               phoneController.clear();
+                              findMaxNumber();
                             });
                           },
                         ),
@@ -137,8 +144,7 @@ class _PhoneRegistrationPageState extends State<PhoneRegistrationPage> {
                           controller: phoneController,
                           textInputAction: TextInputAction.done,
                           keyboardType: TextInputType.number,
-                          inputFormatters:
-                              AppUtils.onlyDigitsFormatter(EnvVariable.maxNumber),
+                          inputFormatters: AppUtils.onlyDigitsFormatter(maxNumbers),
                           onChanged: (p0) {
                             isTooManyAttempt = false;
                             setState(() {});

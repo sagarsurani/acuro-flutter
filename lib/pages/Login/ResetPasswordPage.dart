@@ -149,7 +149,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // content view
+          /// content view
           Text(
             appText.update_your_password,
             textAlign: TextAlign.center,
@@ -157,7 +157,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
           ),
           SizedBox(height: 32.h),
 
-          // create password text field
+          /// create password text field
           CustomTextField(
             controller: passwordController,
             hint: appText.enter_password,

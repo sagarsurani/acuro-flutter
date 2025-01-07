@@ -62,7 +62,7 @@ class Preferences {
     return prefs.remove(key);
   }
 
-  static clear() async {
+  static clear(String accessToken) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.clear();
   }
