@@ -358,33 +358,4 @@ class AuthRepositoryImpl extends AuthRepository {
       return false;
     }
   }
-
-  @override
-  Future<List<OTPLimitationModel>> getAllOTPLimitationList() async {
-    final docRef = otpValidationCollection();
-    final docSnapshot = await docRef.get();
-    return docSnapshot.docs
-        .map((e) => OTPLimitationModel.fromJson(e.data() as Json))
-        .toList();
-  }
-
-  @override
-  Future<List<UserModel>> getAllUsers() async {
-    final docRef = userCollection();
-    final docSnapshot = await docRef.get();
-    return docSnapshot.docs
-        .map((e) => UserModel.fromJson(e.data() as Json))
-        .toList();
-  }
-
-  @override
-  Future<void> deleteAnyCollection({
-    required String collectionName,
-  }) async {
-    await fireStore.collection(collectionName).get().then((value) {
-      value.docs.forEach((element) {
-        element.reference.delete();
-      });
-    });
-  }
 }

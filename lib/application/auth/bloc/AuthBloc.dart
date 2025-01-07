@@ -20,12 +20,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<ResendOtpEvent>(_resendOtpEvent);
     on<SendEmailOtpEvent>(_sendEmailOtpEvent);
     on<VerifyEmailOtpEvent>(_verifyEmailOtpEvent);
-    // on<ResendEmailOtpEvent>(_resendEmailOtpEvent);
     on<EmailAuthSignUpEvent>(_emailLoginEvent);
     on<LoginAuthEvent>(_loginAuthEvent);
-    on<GetAllUsers>(_getAllUsers);
-    on<GetAllOtpCollection>(_getAllOtpCollection);
-    on<DeleteAnyCollection>(_deleteAnyCollection);
     on<ResetPassword>(_resetPassword);
   }
 
@@ -284,23 +280,5 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } else {
       return "";
     }
-  }
-
-  Future<void> _getAllUsers(GetAllUsers event, Emitter<AuthState> emit) async {
-    List<UserModel> userList = await authRepository.getAllUsers();
-    print(userList);
-  }
-
-  Future<void> _getAllOtpCollection(
-      GetAllOtpCollection event, Emitter<AuthState> emit) async {
-    List<OTPLimitationModel> otpList =
-        await authRepository.getAllOTPLimitationList();
-    print(otpList);
-  }
-
-  Future<void> _deleteAnyCollection(
-      DeleteAnyCollection event, Emitter<AuthState> emit) async {
-    await authRepository.deleteAnyCollection(
-        collectionName: event.collectionName);
   }
 }

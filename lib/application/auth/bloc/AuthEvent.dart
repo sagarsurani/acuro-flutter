@@ -64,16 +64,6 @@ class LoginAuthEvent extends AuthEvent {
       required this.password});
 }
 
-class GetAllUsers extends AuthEvent {}
-
-class GetAllOtpCollection extends AuthEvent {}
-
-class DeleteAnyCollection extends AuthEvent {
-  final String collectionName;
-
-  const DeleteAnyCollection({required this.collectionName});
-}
-
 class ResetPassword extends AuthEvent {
   final String emailOrPhone;
   final bool isPhone;

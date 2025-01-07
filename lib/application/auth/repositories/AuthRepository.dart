@@ -52,14 +52,6 @@ abstract class AuthRepository {
     required bool isMobile,
   });
 
-  Future<List<UserModel>> getAllUsers();
-
-  Future<List<OTPLimitationModel>> getAllOTPLimitationList();
-
-  Future<void> deleteAnyCollection({
-    required String collectionName,
-  });
-
   Future<bool> resetPassword({
     required String authValue,
     required String password,
