@@ -11,9 +11,6 @@ abstract class AuthState extends Equatable {
 
 class AuthInitial extends AuthState {}
 
-
-// 1
-
 class AuthLoading extends AuthState {}
 
 class AuthError extends AuthState {
@@ -27,9 +24,6 @@ class AuthOtpSent extends AuthState {
 
   const AuthOtpSent({required this.verificationId});
 }
-
-
-//2
 
 class AuthVerifyLoading extends AuthState {}
 
@@ -50,9 +44,6 @@ class ResendOtpSend extends AuthState {
 
   const ResendOtpSend({required this.verificationId});
 }
-
-
-//3
 
 class LoginAuthLoading extends AuthState {}
 
@@ -76,8 +67,6 @@ class EmailAuthDone extends AuthState {
 }
 
 
-//4
-
 class EmailAuthLoading extends AuthState {}
 
 class EmailAuthError extends AuthState {
@@ -92,13 +81,8 @@ class AuthEmailOtpSent extends AuthState {
   const AuthEmailOtpSent({required this.verificationId});
 }
 
-class EmailAuthVerified extends AuthState {
-  // final UserCredential? userCredential;
-  //
-  // const EmailAuthVerified({this.userCredential});
-}
+class EmailAuthVerified extends AuthState {}
 
-// 5
 class ResetAuthLoading extends AuthState {}
 
 class ResetPasswordError extends AuthState {

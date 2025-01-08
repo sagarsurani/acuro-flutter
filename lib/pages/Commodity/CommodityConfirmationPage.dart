@@ -1,3 +1,4 @@
+
 import 'package:acuro/components/Common/CommonBackgroundView.dart';
 import 'package:acuro/components/Common/CommonButton.dart';
 import 'package:acuro/components/Common/CommonTextStyle.dart';
@@ -7,7 +8,6 @@ import 'package:acuro/core/navigator/AppRouter.gr.dart';
 import 'package:acuro/core/theme/AppColors.dart';
 import 'package:acuro/core/utils/AppUtils.dart';
 import 'package:acuro/models/Model.dart';
-import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

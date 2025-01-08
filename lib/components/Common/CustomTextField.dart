@@ -1,8 +1,5 @@
-// ignore_for_file: must_be_immutable
 
 import 'package:acuro/components/Common/CommonTextStyle.dart';
-import 'package:acuro/core/constants/GlobalConstant.dart';
-import 'package:acuro/core/utils/AppUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

@@ -2,8 +2,9 @@
 
 import '../../models/Model.dart';
 
-typedef Json = Map<String, dynamic>;
 
+/// static app keywords
+typedef Json = Map<String, dynamic>;
 const ACURO = "Acuro";
 const AEONIK = "Aeonik";
 const HEADER_PROTECTED_AUTHENTICATION_PREFIX = 'Bearer';
@@ -12,6 +13,23 @@ const APPLICATION_JSON = 'application/json';
 const BEARER = 'Bearer';
 const CONTENT_TYPE = 'Content-Type';
 const AUTHORIZATION = 'Authorization';
+const PHONEAUTH = "phone";
+const EMAILAUTH = "email";
+const FORGOTPHONE = "forgotphone";
+const FORGOTEMAIL = "forgotmail";
+const PHONENUMBER = "phoneNumber";
+const EMAIL = "email";
+const OTPFROM = "otpFrom";
+const SOMETHING_WANT_WRONG = "Somethings want wrong";
+const NUMBER_NOT_REGISTER = "Number not registered";
+const EMAIL_NOT_REGISTER = "Email not registered";
+const SO_MANY_ATTEMPT = "So many attempt";
+const OTP = "otp";
+const TOKEN = "token";
+const BLOCKED = "blocked";
+const COUNTRIES = "countries";
+
+/// cloud and service account urls
 
 const String updatePasswordUrl =
     "https://us-central1-acuro-app-qa.cloudfunctions.net/updatePassword";
@@ -25,6 +43,19 @@ const String verifyEmailOtpFunctionUrl =
 const String generateServiceTokenUrl =
     "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/361342922595-compute@developer.gserviceaccount.com:generateIdToken";
 
+List<String> GOOGLECLOUDSCOPE = [
+  'https://www.googleapis.com/auth/iam',
+  'https://www.googleapis.com/auth/cloud-platform',
+  'https://www.googleapis.com/auth/firebase.database',
+  'https://www.googleapis.com/auth/userinfo.email',
+];
+
+/// load json
+
+const String LOADCOUNTRYJSON = "assets/cloud/countries.json";
+const String LOADSERVICEACCOUNTJSON = "assets/cloud/acuro_service.json";
+/// constants enum
+
 enum RoleSelectionEnum { selected, unSelected, comingSoon }
 
 enum OTPEnum { phone, email, forgotPassword }
@@ -33,21 +64,8 @@ enum CommodityStatus { confirm, pending, pendingWithCustomerSupport }
 
 enum LoginType { signInWithEmail, signInWithPhone }
 
-//
 
-const PHONEAUTH = "phone";
-const EMAILAUTH = "email";
-const FORGOTPHONE = "forgotphone";
-const FORGOTEMAIL = "forgotmail";
-const PHONENUMBER = "phoneNumber";
-const EMAIL = "email";
-const OTPFROM = "otpFrom";
-const SOMETHING_WANT_WRONG = "Somethings want wrong";
-const NUMBER_NOT_REGISTER = "Number not registered";
-const EMAIL_NOT_REGISTER = "Email not registered";
-const SO_MANY_ATTEMPT = "So many attempt";
-const OTP = "otp";
-const BLOCKED = "blocked";
+/// Dummy UI data
 
 List<RoleSelectionModel> roleSelectionListStatic = [
   RoleSelectionModel(

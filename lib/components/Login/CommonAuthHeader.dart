@@ -1,7 +1,6 @@
 
 
 import 'package:acuro/components/Common/CommonTextStyle.dart';
-import 'package:acuro/core/theme/AppColors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

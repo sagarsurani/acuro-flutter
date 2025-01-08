@@ -38,7 +38,7 @@ class AppUtils {
   }
 
   static List<TextInputFormatter> onlyDigitsFormatter(List<int> phoneLengthList) {
-    int maxLength = phoneLengthList.isNotEmpty ? phoneLengthList.reduce((a, b) => a > b ? a : b) : 10; // Default to 10 if list is empty
+    int maxLength = phoneLengthList.isNotEmpty ? phoneLengthList.reduce((a, b) => a > b ? a : b) : 10;
 
     return [
       FilteringTextInputFormatter.digitsOnly,
@@ -66,35 +66,30 @@ class AppUtils {
 
   static Future<List<int>> findMaxNumberOfMobile(String countryCode) async {
     final String response =
-    await rootBundle.loadString("assets/cloud/countries.json");
-
+    await rootBundle.loadString(LOADCOUNTRYJSON);
     Map<String, dynamic> jsonData = json.decode(response);
+    List<dynamic> countriesList = jsonData[COUNTRIES];
 
-    List<dynamic> countriesList = jsonData['countries'];
-
-    // Map the list of countries to a List of CountryModel objects
     List<CountryModel> countries = countriesList
         .map((data) => CountryModel.fromJson(data))
         .toList();
 
-    // Find the country that matches the provided countryCode
     CountryModel country = countries.firstWhere(
           (c) => c.code == countryCode,
       orElse: () => CountryModel(
         code: 'IN',
         label: 'India',
         phone: '',
-        phoneLength: const [10], // Default value
+        phoneLength: const [10],
       ),
     );
 
-    // If the country is found with a valid code, return the phoneLength
     if (country.phoneLength is int) {
       return [country.phoneLength as int];
     } else if (country.phoneLength is List<dynamic>) {
       return (country.phoneLength as List<dynamic>).cast<int>();
     } else {
-      return [10]; // Default fallback
+      return [10];
     }
   }
 
@@ -102,18 +97,12 @@ class AppUtils {
       {required String cloudUrl}) async {
     try {
       final String response =
-          await rootBundle.loadString("assets/cloud/acuro_service.json");
+          await rootBundle.loadString(LOADSERVICEACCOUNTJSON);
       Map<String, dynamic> serviceAccount = await json.decode(response);
-      List<String> scopes = [
-        'https://www.googleapis.com/auth/iam',
-        'https://www.googleapis.com/auth/cloud-platform',
-        'https://www.googleapis.com/auth/firebase.database',
-        'https://www.googleapis.com/auth/userinfo.email',
-      ];
       final accountCredentials =
           ServiceAccountCredentials.fromJson(serviceAccount);
       AuthClient client =
-          await clientViaServiceAccount(accountCredentials, scopes);
+          await clientViaServiceAccount(accountCredentials, GOOGLECLOUDSCOPE);
       String accessToken = client.credentials.accessToken.data;
       final body = jsonEncode({
         'audience': cloudUrl,
@@ -129,7 +118,7 @@ class AppUtils {
       );
       if (response1.statusCode == 200) {
         Map<String, dynamic> responseData = jsonDecode(response1.body);
-        String token = responseData['token'] ?? '';
+        String token = responseData[TOKEN] ?? '';
         return token;
       } else {
         throw Exception('Failed to generate ID token: ${response1.body}');

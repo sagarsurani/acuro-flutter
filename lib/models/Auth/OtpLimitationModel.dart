@@ -3,7 +3,6 @@
 import 'package:acuro/core/constants/Constants.dart';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
-
 part 'OtpLimitationModel.g.dart';
 
 @JsonSerializable(explicitToJson: true)

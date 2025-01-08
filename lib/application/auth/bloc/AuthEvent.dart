@@ -1,3 +1,4 @@
+
 import 'package:acuro/core/constants/Constants.dart';
 import 'package:acuro/models/Auth/UserModel.dart';
 import 'package:equatable/equatable.dart';
@@ -62,16 +63,6 @@ class LoginAuthEvent extends AuthEvent {
       {required this.emailOrPhone,
       required this.loginType,
       required this.password});
-}
-
-class GetAllUsers extends AuthEvent {}
-
-class GetAllOtpCollection extends AuthEvent {}
-
-class DeleteAnyCollection extends AuthEvent {
-  final String collectionName;
-
-  const DeleteAnyCollection({required this.collectionName});
 }
 
 class ResetPassword extends AuthEvent {

@@ -1,6 +1,5 @@
+
 import 'dart:async';
-import 'dart:convert';
-import 'dart:developer';
 import 'package:acuro/application/auth/repositories/AuthRepository.dart';
 import 'package:acuro/core/constants/Constants.dart';
 import 'package:acuro/core/constants/EnvVariable.dart';
@@ -10,8 +9,6 @@ import 'package:acuro/core/utils/ToastUtils.dart';
 import 'package:acuro/models/Auth/OtpLimitationModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/services.dart';
-import 'package:googleapis_auth/auth_io.dart';
 import 'package:injectable/injectable.dart';
 import '../../../../models/Auth/UserModel.dart';
 import 'package:dio/dio.dart';
@@ -357,34 +354,5 @@ class AuthRepositoryImpl extends AuthRepository {
     } catch (err) {
       return false;
     }
-  }
-
-  @override
-  Future<List<OTPLimitationModel>> getAllOTPLimitationList() async {
-    final docRef = otpValidationCollection();
-    final docSnapshot = await docRef.get();
-    return docSnapshot.docs
-        .map((e) => OTPLimitationModel.fromJson(e.data() as Json))
-        .toList();
-  }
-
-  @override
-  Future<List<UserModel>> getAllUsers() async {
-    final docRef = userCollection();
-    final docSnapshot = await docRef.get();
-    return docSnapshot.docs
-        .map((e) => UserModel.fromJson(e.data() as Json))
-        .toList();
-  }
-
-  @override
-  Future<void> deleteAnyCollection({
-    required String collectionName,
-  }) async {
-    await fireStore.collection(collectionName).get().then((value) {
-      value.docs.forEach((element) {
-        element.reference.delete();
-      });
-    });
   }
 }

@@ -1,3 +1,4 @@
+
 import 'package:acuro/application/auth/bloc/AuthBloc.dart';
 import 'package:acuro/application/auth/bloc/AuthEvent.dart';
 import 'package:acuro/application/auth/bloc/AuthState.dart';
@@ -11,13 +12,11 @@ import 'package:acuro/components/Common/CountryCodePicker.dart';
 import 'package:acuro/components/Common/CustomTextField.dart';
 import 'package:acuro/components/Common/ErrorView.dart';
 import 'package:acuro/core/constants/Constants.dart';
-import 'package:acuro/core/constants/EnvVariable.dart';
 import 'package:acuro/core/constants/ImageConstants.dart';
 import 'package:acuro/core/di/Injectable.dart';
 import 'package:acuro/core/navigator/AppRouter.gr.dart';
 import 'package:acuro/core/theme/AppColors.dart';
 import 'package:acuro/core/utils/AppUtils.dart';
-import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

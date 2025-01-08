@@ -1,6 +1,4 @@
 
-
-import 'package:acuro/core/theme/AppColors.dart';
 import 'package:flutter/material.dart';
 
 class CommonBackgroundView extends StatelessWidget {

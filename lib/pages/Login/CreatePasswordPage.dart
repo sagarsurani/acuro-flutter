@@ -16,7 +16,6 @@ import 'package:acuro/core/navigator/AppRouter.gr.dart';
 import 'package:acuro/core/persistence/PreferenceHelper.dart';
 import 'package:acuro/core/utils/AppUtils.dart';
 import 'package:acuro/models/Auth/UserModel.dart';
-import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -92,7 +92,9 @@ class _CommonButtonState extends State<CommonButton> {
             SvgPicture.asset(
               widget.suffixIcon!,
               height: widget.iconSize ?? 12.r,
-              color: widget.iconColor,
+              colorFilter: widget.iconColor != null
+                  ? ColorFilter.mode(widget.iconColor!, BlendMode.srcIn)
+                  : null,
             )
           ],
         ],
