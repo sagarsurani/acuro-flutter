@@ -45,6 +45,7 @@ class ResendOtpSend extends AuthState {
   const ResendOtpSend({required this.verificationId});
 }
 
+
 class LoginAuthLoading extends AuthState {}
 
 
