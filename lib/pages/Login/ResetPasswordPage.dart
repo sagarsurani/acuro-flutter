@@ -1,4 +1,3 @@
-
 import 'package:acuro/application/auth/bloc/AuthBloc.dart';
 import 'package:acuro/application/auth/bloc/AuthEvent.dart';
 import 'package:acuro/application/auth/bloc/AuthState.dart';
@@ -23,10 +22,7 @@ class ResetPasswordPage extends StatefulWidget {
   final String emailOrPhone;
   final bool isPhone;
   const ResetPasswordPage(
-      {super.key,
-        required this.emailOrPhone,
-        required this.isPhone
-      });
+      {super.key, required this.emailOrPhone, required this.isPhone});
 
   @override
   State<ResetPasswordPage> createState() => _ResetPasswordPageState();
@@ -35,6 +31,7 @@ class ResetPasswordPage extends StatefulWidget {
 class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  final scrollController = ScrollController();
   bool hasError = false;
   bool isLoading = false;
   bool isPasswordVisible = false;
@@ -54,13 +51,15 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     getIt<AuthBloc>().add(ResetPassword(
         emailOrPhone: widget.emailOrPhone,
         password: passwordController.text.trim(),
-        isPhone: widget.isPhone
-    ));
+        isPhone: widget.isPhone));
   }
 
   void checkPasswordChangedValidation(String text) {
     var appText = AppLocalizations.of(context)!;
     if (text.isNotEmpty && !AppUtils.isPasswordValid(text)) {
+      if (!hasError) {
+        AppUtils.pageScrollUp(controller: scrollController, height: 100);
+      }
       hasError = true;
       errorsText = [
         appText.minimum_length_should_be_eight,
@@ -114,28 +113,44 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
           AppUtils.closeTheKeyboard(context);
         },
         child: CommonBackgroundView(
-          child: Padding(
-            padding: EdgeInsets.only(
-                top: 90.h, bottom: 24.h, left: 20.w, right: 20.w),
-            child: SmoothView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // content view
-                  resetYourPasswordView(appText),
-                  // error view
-                  errorView(appText),
-                  SizedBox(height: 16.h),
-                  const Spacer(),
-                  // submit button
-                  CommonButton(
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    physics: const ClampingScrollPhysics(),
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                          top: 90.h, bottom: 24.h, left: 20.w, right: 20.w),
+                      child: SmoothView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // content view
+                            resetYourPasswordView(appText),
+                            // error view
+                            errorView(appText),
+                            SizedBox(height: 16.h),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                // submit button
+                Padding(
+                  padding:
+                      EdgeInsets.symmetric(vertical: 24.h, horizontal: 20.w),
+                  child: CommonButton(
                       onTap: tapOnSubmitPassword,
                       isLoading: isLoading,
                       isEnable: isBothPasswordMatched(),
-                      buttonText: appText.reset_password)
-                ],
-              ),
+                      buttonText: appText.reset_password),
+                )
+              ],
             ),
           ),
         ),
@@ -161,7 +176,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
           CustomTextField(
             controller: passwordController,
             hint: appText.enter_password,
-            keyboardType: TextInputType.name,
+            keyboardType: TextInputType.text,
             isPng: false,
             onTapOnIcon: () {
               isPasswordVisible = !isPasswordVisible;
@@ -183,7 +198,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
           CustomTextField(
             controller: confirmPasswordController,
             hint: appText.enter_confirm_password,
-            keyboardType: TextInputType.name,
+            keyboardType: TextInputType.text,
             isPng: false,
             onTapOnIcon: () {
               isConformPasswordVisible = !isConformPasswordVisible;

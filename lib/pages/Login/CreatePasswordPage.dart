@@ -198,7 +198,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
           CustomTextField(
             controller: passwordController,
             hint: appText.enter_password,
-            keyboardType: TextInputType.name,
+            keyboardType: TextInputType.text,
             isPng: false,
             onTapOnIcon: () {
               isPasswordVisible = !isPasswordVisible;
@@ -220,7 +220,7 @@ class _CreatePasswordPageState extends State<CreatePasswordPage> {
           CustomTextField(
             controller: confirmPasswordController,
             hint: appText.enter_confirm_password,
-            keyboardType: TextInputType.name,
+            keyboardType: TextInputType.text,
             isPng: false,
             onTapOnIcon: () {
               isConformPasswordVisible = !isConformPasswordVisible;
